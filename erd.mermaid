@@ -1,0 +1,85 @@
+erDiagram
+    %% ==========================================
+    %% USERS & AUTHENTICATION
+    %% ==========================================
+    USERS {
+        int id PK
+        varchar full_name
+        varchar email "unique"
+        varchar password
+        varchar role "jobseeker, hr, admin"
+        boolean is_active "default true"
+        timestamp created_at "current_timestamp"
+    }
+
+    PROFILES {
+        int id PK
+        int user_id FK
+        varchar phone
+        varchar location
+        text bio
+        varchar linkedin_url
+        varchar portfolio_url
+        date birth_date
+    }
+
+    %% ==========================================
+    %% JOB POSTINGS
+    %% ==========================================
+    JOBS {
+        int id PK
+        int posted_by FK "HR user"
+        varchar title
+        text description
+        text requirements
+        varchar employement_type "full-time, part-time, remote"
+        varchar location
+        varchar salary_range
+        varchar status "open, closed, draft"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deadline
+    }
+
+    %% ==========================================
+    %% CANDIDATES & APPLICATIONS
+    %% ==========================================
+    APPLICATIONS {
+        int id PK
+        int job_id FK
+        int user_id FK "Jobseeker"
+        varchar status "applied, rejected, interviewed, offered, hired"
+        timestamp applied_at
+        timestamp updated_at
+        varchar score "0-100"
+    }
+
+    %% ==========================================
+    %% CV/RESUME STORAGE
+    %% ==========================================
+    CVS {
+        int id PK
+        int user_id FK
+        varchar file_name
+        varchar file_path "S3/MinIO path/server storage"
+        varchar file_type "pdf"
+        int file_size
+        text extracted_text "For AI processing"
+        timestamp uploaded_at
+    }
+
+    %% ==========================================
+    %% RELATIONSHIPS
+    %% ==========================================
+    USERS ||--o| PROFILES : "has"
+    USERS ||--o| APPLICATIONS : "submits"
+    USERS ||--o| CVS : "uploads"
+    USERS ||--o{ JOBS : "posts"
+    JOBS ||--o{ APPLICATIONS : "receives"
+    APPLICATIONS ||--|| CVS : "uses"
+
+    %% ==========================================
+    %% STYLING (Background Putih, Garis Hitam, Text Hitam)
+    %% ==========================================
+    classDef default fill:#FFFFFF,stroke:#000000,stroke-width:2px,color:#000000
+    class USER,PROFILES,SOBS,APPLICATIONS,CVS default
