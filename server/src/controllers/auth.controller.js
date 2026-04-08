@@ -14,11 +14,31 @@ export async function register(req, res, next) {
       data,
     });
   } catch (err) {
-    // If service threw custom error with message 'email sudah terdaftar', normalize response
-    if (err.message === 'email sudah terdaftar') {
+    // If service threw custom error with message 'email already registered', normalize response
+    if (err.message === 'email already registered') {
       return res.status(400).json({
         status: 'error',
-        message: 'email sudah terdaftar',
+        message: 'email already registered',
+      });
+    }
+    next(err);
+  }
+}
+
+export async function login(req, res, next) {
+  try {
+    const { email, password } = req.body;
+    const data = await authService.login({ email, password });
+    res.status(200).json({
+      status: 'success',
+      message: 'Login successful',
+      data,
+    });
+  } catch (err) {
+    if (err.message === 'Invalid email or password') {
+      return res.status(401).json({
+        status: 'error',
+        message: 'Invalid email or password',
       });
     }
     next(err);
