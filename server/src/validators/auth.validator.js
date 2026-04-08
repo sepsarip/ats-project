@@ -7,3 +7,10 @@ export const registerValidation = [
     .isLength({ min: 6 })
     .withMessage('password must be at least 6 characters'),
 ];
+
+export const loginValidation = [
+  body('email').isEmail().withMessage('email is invalid').normalizeEmail(),
+  body('password')
+    .isLength({ min: 6 })
+    .withMessage('password must be at least 6 characters'),
+];
