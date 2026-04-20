@@ -1,4 +1,5 @@
 erDiagram
+    direction LR
     %% ==========================================
     %% USERS & AUTHENTICATION
     %% ==========================================
@@ -10,6 +11,7 @@ erDiagram
         varchar role "jobseeker, hr, admin"
         boolean is_active "default true"
         timestamp created_at "current_timestamp"
+        timestamp updated_at "current_timestamp"
     }
 
     PROFILES {
@@ -34,7 +36,8 @@ erDiagram
         text requirements
         varchar employement_type "full-time, part-time, remote"
         varchar location
-        varchar salary_range
+        decimal min_salary
+        decimal max_salary
         varchar status "open, closed, draft"
         timestamp created_at
         timestamp updated_at
@@ -57,7 +60,7 @@ erDiagram
     %% ==========================================
     %% CV/RESUME STORAGE
     %% ==========================================
-    CVS {
+    CV_FILES {
         int id PK
         int user_id FK
         varchar file_name
@@ -73,13 +76,13 @@ erDiagram
     %% ==========================================
     USERS ||--o| PROFILES : "has"
     USERS ||--o| APPLICATIONS : "submits"
-    USERS ||--o| CVS : "uploads"
+    USERS ||--o| CV_FILES : "uploads"
     USERS ||--o{ JOBS : "posts"
     JOBS ||--o{ APPLICATIONS : "receives"
-    APPLICATIONS ||--|| CVS : "uses"
+    APPLICATIONS ||--|| CV_FILES : "uses"
 
     %% ==========================================
     %% STYLING (Background Putih, Garis Hitam, Text Hitam)
     %% ==========================================
     classDef default fill:#FFFFFF,stroke:#000000,stroke-width:2px,color:#000000
-    class USER,PROFILES,SOBS,APPLICATIONS,CVS default
+    class USER,PROFILES,SOBS,APPLICATIONS,CV_FILES default

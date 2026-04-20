@@ -17,3 +17,16 @@ export async function createUser({
   const { rows } = await pool.query(q, values);
   return rows[0];
 }
+
+export async function findById(id) {
+  const q = `SELECT * FROM users WHERE id = $1 LIMIT 1`;
+  const { rows } = await pool.query(q, [id]);
+  return rows[0] || null;
+}
+
+export async function updatePasswordById(id, hashedPassword) {
+  const q = `UPDATE users SET password = $2, updated_at = NOW() WHERE id = $1 RETURNING id, full_name, email, updated_at`;
+  const values = [id, hashedPassword];
+  const { rows } = await pool.query(q, values);
+  return rows[0] || null;
+}
