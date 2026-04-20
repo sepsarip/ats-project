@@ -44,3 +44,38 @@ export async function login(req, res, next) {
     next(err);
   }
 }
+
+export async function changePassword(req, res, next) {
+  try {
+    const userId = req.user && req.user.id;
+    const { oldPassword, newPassword } = req.body;
+    const data = await authService.changePassword({
+      userId,
+      oldPassword,
+      newPassword,
+    });
+    res
+      .status(200)
+      .json({ status: 'success', message: 'Password berhasil diubah', data });
+  } catch (err) {
+    if (err.message === 'User tidak ditemukan') {
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'User tidak ditemukan' });
+    }
+    if (err.message === 'Password lama tidak sesuai') {
+      return res
+        .status(401)
+        .json({ status: 'error', message: 'Password lama tidak sesuai' });
+    }
+    if (err.message === 'Password baru tidak boleh sama dengan password lama') {
+      return res
+        .status(400)
+        .json({
+          status: 'error',
+          message: 'Password baru tidak boleh sama dengan password lama',
+        });
+    }
+    next(err);
+  }
+}

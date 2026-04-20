@@ -1,7 +1,12 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
-import { findByEmail, createUser } from '../models/users.model.js';
+import {
+  findByEmail,
+  createUser,
+  findById,
+  updatePasswordById,
+} from '../models/users.model.js';
 
 export async function registerJobseeker({ fullName, email, password }) {
   const existing = await findByEmail(email);
@@ -74,5 +79,44 @@ export async function login({ email, password }) {
       tokenType: 'Bearer',
       expiresIn: env.jwt.expiresIn,
     },
+  };
+}
+
+export async function changePassword({ userId, oldPassword, newPassword }) {
+  const user = await findById(userId);
+  if (!user) {
+    const err = new Error('User tidak ditemukan');
+    err.statusCode = 404;
+    throw err;
+  }
+
+  const match = await bcrypt.compare(oldPassword, user.password);
+  if (!match) {
+    const err = new Error('Password lama tidak sesuai');
+    err.statusCode = 401;
+    throw err;
+  }
+
+  if (oldPassword === newPassword) {
+    const err = new Error(
+      'Password baru tidak boleh sama dengan password lama',
+    );
+    err.statusCode = 400;
+    throw err;
+  }
+
+  const hashed = await bcrypt.hash(newPassword, 10);
+  const updated = await updatePasswordById(userId, hashed);
+  if (!updated) {
+    const err = new Error('User tidak ditemukan');
+    err.statusCode = 404;
+    throw err;
+  }
+
+  return {
+    id: updated.id,
+    email: updated.email,
+    fullName: updated.full_name,
+    updatedAt: updated.updated_at,
   };
 }
