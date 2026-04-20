@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
+import { HttpError } from '../utils/HttpError.js';
 import {
   findByEmail,
   createUser,
@@ -11,9 +12,7 @@ import {
 export async function registerJobseeker({ fullName, email, password }) {
   const existing = await findByEmail(email);
   if (existing) {
-    const err = new Error('email already registered');
-    err.statusCode = 400;
-    throw err;
+    throw new HttpError(400, 'email already registered', 'EMAIL_EXISTS');
   }
 
   const hashed = await bcrypt.hash(password, 10);
@@ -34,9 +33,7 @@ export async function registerJobseeker({ fullName, email, password }) {
   } catch (err) {
     // Handle unique constraint violation for email from PostgreSQL (error code 23505)
     if (err.code === '23505') {
-      const e = new Error('email already registered');
-      e.statusCode = 400;
-      throw e;
+      throw new HttpError(400, 'email already registered', 'EMAIL_EXISTS');
     }
     throw err;
   }
@@ -45,16 +42,20 @@ export async function registerJobseeker({ fullName, email, password }) {
 export async function login({ email, password }) {
   const user = await findByEmail(email);
   if (!user) {
-    const err = new Error('Invalid email or password');
-    err.statusCode = 401;
-    throw err;
+    throw new HttpError(
+      401,
+      'Invalid email or password',
+      'INVALID_CREDENTIALS',
+    );
   }
 
   const match = await bcrypt.compare(password, user.password);
   if (!match) {
-    const err = new Error('Invalid email or password');
-    err.statusCode = 401;
-    throw err;
+    throw new HttpError(
+      401,
+      'Invalid email or password',
+      'INVALID_CREDENTIALS',
+    );
   }
 
   const payload = {
@@ -85,32 +86,26 @@ export async function login({ email, password }) {
 export async function changePassword({ userId, oldPassword, newPassword }) {
   const user = await findById(userId);
   if (!user) {
-    const err = new Error('User tidak ditemukan');
-    err.statusCode = 404;
-    throw err;
+    throw new HttpError(404, 'User tidak ditemukan', 'USER_NOT_FOUND');
   }
 
   const match = await bcrypt.compare(oldPassword, user.password);
   if (!match) {
-    const err = new Error('Password lama tidak sesuai');
-    err.statusCode = 401;
-    throw err;
+    throw new HttpError(401, 'Password lama tidak sesuai', 'INVALID_PASSWORD');
   }
 
   if (oldPassword === newPassword) {
-    const err = new Error(
+    throw new HttpError(
+      400,
       'Password baru tidak boleh sama dengan password lama',
+      'SAME_PASSWORD',
     );
-    err.statusCode = 400;
-    throw err;
   }
 
   const hashed = await bcrypt.hash(newPassword, 10);
   const updated = await updatePasswordById(userId, hashed);
   if (!updated) {
-    const err = new Error('User tidak ditemukan');
-    err.statusCode = 404;
-    throw err;
+    throw new HttpError(404, 'User tidak ditemukan', 'USER_NOT_FOUND');
   }
 
   return {

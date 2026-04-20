@@ -1,13 +1,17 @@
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
+import { HttpError } from '../utils/HttpError.js';
 
 export function authMiddleware(req, res, next) {
   const auth = req.headers.authorization;
   if (!auth || !auth.startsWith('Bearer ')) {
-    return res.status(401).json({
-      status: 'error',
-      message: 'Token is not provided or invalid format',
-    });
+    return next(
+      new HttpError(
+        401,
+        'Token tidak valid atau telah kadaluarsa',
+        'INVALID_TOKEN',
+      ),
+    );
   }
 
   const token = auth.split(' ')[1];
@@ -16,9 +20,12 @@ export function authMiddleware(req, res, next) {
     req.user = { id: payload.id, email: payload.email, role: payload.role };
     return next();
   } catch (err) {
-    return res.status(401).json({
-      status: 'error',
-      message: 'Token is not valid or has expired',
-    });
+    return next(
+      new HttpError(
+        401,
+        'Token tidak valid atau telah kadaluarsa',
+        'INVALID_TOKEN',
+      ),
+    );
   }
 }
