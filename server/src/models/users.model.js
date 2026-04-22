@@ -12,7 +12,7 @@ export async function createUser({
   password,
   role = 'jobseeker',
 }) {
-  const q = `INSERT INTO users (full_name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id, full_name, email, created_at`;
+  const q = `INSERT INTO users (full_name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id, full_name, email, role, is_active, created_at`;
   const values = [full_name, email, password, role];
   const { rows } = await pool.query(q, values);
   return rows[0];
