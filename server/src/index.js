@@ -3,6 +3,7 @@ import { env } from './config/env.js';
 import healthRoutes from './routes/health.routes.js';
 import authRoutes from './routes/auth.route.js';
 import adminUsersRoutes from './routes/admin.users.route.js';
+import jobsRoutes from './routes/jobs.route.js';
 import {
   errorHandler,
   notFoundHandler,
@@ -15,6 +16,7 @@ app.use(express.json({ limit: '1mb' }));
 app.use('/api', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin/users', adminUsersRoutes);
+app.use('/api/jobs', jobsRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
