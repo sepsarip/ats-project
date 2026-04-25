@@ -1,5 +1,6 @@
 import * as jobsModel from '../models/jobs.model.js';
 import { HttpError } from '../utils/HttpError.js';
+import logger from '../config/logger.js';
 
 export async function createJob(postedBy, data) {
   if (!postedBy) {
@@ -25,9 +26,14 @@ export async function createJob(postedBy, data) {
 
   try {
     const job = await jobsModel.insertJob(payload);
+    logger.info('Job inserted into database', {
+      title: payload.title,
+      posted_by: postedBy,
+      jobId: job?.id,
+    });
     return job;
   } catch (err) {
-    console.error('Error inserting job:', err);
+    logger.error('Error inserting job', { error: err });
     throw new HttpError(500, 'Gagal membuat pekerjaan', 'JOB_CREATION_FAILED');
   }
 }
