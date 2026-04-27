@@ -19,3 +19,22 @@ export const createJob = asyncHandler(async (req, res) => {
     data: { job },
   });
 });
+
+export const listJobs = asyncHandler(async (req, res) => {
+  const query = req.query || {};
+  const user = req.user || null;
+
+  const result = await jobsService.listJobs(query, user);
+
+  logger.info('Jobs retrieved successfully', {
+    userId: user?.id,
+    page: query.page,
+    limit: query.limit,
+  });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Jobs retrieved successfully',
+    data: result,
+  });
+});

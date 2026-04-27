@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, query } from 'express-validator';
 
 export const createJobValidation = [
   body('title').isString().trim().notEmpty().withMessage('title is required'),
@@ -44,4 +44,30 @@ export const createJobValidation = [
     }
     return true;
   }),
+];
+
+export const listJobsValidation = [
+  query('page')
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage('page must be an integer >= 1')
+    .toInt(),
+  query('limit')
+    .optional()
+    .isInt({ min: 1, max: 50 })
+    .withMessage('limit must be between 1 and 50')
+    .toInt(),
+  query('location')
+    .optional()
+    .isIn(['onsite', 'remote', 'hybrid'])
+    .withMessage('location is invalid'),
+  query('employment_type')
+    .optional()
+    .isIn(['full-time', 'part-time', 'contract', 'internship'])
+    .withMessage('employment_type is invalid'),
+  query('search').optional().isString().trim(),
+  query('status')
+    .optional()
+    .isIn(['draft', 'open', 'closed'])
+    .withMessage('status is invalid'),
 ];
