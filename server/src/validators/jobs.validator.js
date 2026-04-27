@@ -1,4 +1,4 @@
-import { body, query } from 'express-validator';
+import { body, query, param } from 'express-validator';
 
 export const createJobValidation = [
   body('title').isString().trim().notEmpty().withMessage('title is required'),
@@ -70,4 +70,11 @@ export const listJobsValidation = [
     .optional()
     .isIn(['draft', 'open', 'closed'])
     .withMessage('status is invalid'),
+];
+
+export const getJobValidation = [
+  param('id')
+    .isInt({ min: 1 })
+    .withMessage('id must be a positive integer')
+    .toInt(),
 ];

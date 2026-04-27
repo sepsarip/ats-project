@@ -38,3 +38,15 @@ export const listJobs = asyncHandler(async (req, res) => {
     data: result,
   });
 });
+
+export const getJob = asyncHandler(async (req, res) => {
+  const jobId = req.params.id;
+  const job = await jobsService.getJobById(jobId, req.user || null);
+  logger.info('Get job request received', { jobId });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Job retrieved successfully',
+    data: { job },
+  });
+});

@@ -76,3 +76,34 @@ export async function listJobs(query, user) {
     throw new HttpError(500, 'Failed to retrieve jobs', 'JOB_LIST_FAILED');
   }
 }
+
+export async function getJobById(id, user) {
+  try {
+    const job = await jobsModel.getJobById(id);
+    if (!job) {
+      logger.warn('Job not found', { jobId: id });
+      throw new HttpError(404, 'Job not found', 'JOB_NOT_FOUND');
+    }
+
+    const isPrivileged = user && ['admin', 'hr'].includes(user.role);
+    if (!isPrivileged && job.status !== 'open') {
+      // prevent jobseeker from accessing non-open jobs
+      logger.warn('Forbidden access to non-open job', {
+        jobId: id,
+        userId: user?.id,
+      });
+      throw new HttpError(
+        403,
+        'You are not allowed to access this job',
+        'FORBIDDEN',
+      );
+    }
+
+    logger.info('Job retrieved successfully', { jobId: id });
+    return job;
+  } catch (err) {
+    if (err instanceof HttpError) throw err;
+    logger.error('Error retrieving job by ID', { jobId: id, error: err });
+    throw new HttpError(500, 'Failed to retrieve job', 'JOB_RETRIEVE_FAILED');
+  }
+}

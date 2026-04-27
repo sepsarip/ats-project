@@ -107,3 +107,29 @@ export async function countJobs(filters = {}) {
   const { rows } = await pool.query(q, values);
   return rows[0]?.total ?? 0;
 }
+
+export async function getJobById(id) {
+  const q = `
+  SELECT
+    j.id, 
+    j.title,
+    j.about,
+    j.requirements,
+    j.descriptions,
+    j.additional_info,
+    j.employment_type, 
+    j.location, 
+    j.min_salary, 
+    j.max_salary, 
+    j.status, 
+    j.created_at,
+    j.updated_at, 
+    u.full_name AS posted_by_name
+  FROM ats_jobs j
+  LEFT JOIN users u ON j.posted_by = u.id
+  WHERE j.id = $1
+  `;
+
+  const { rows } = await pool.query(q, [id]);
+  return rows[0];
+}
