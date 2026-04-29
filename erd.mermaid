@@ -32,16 +32,17 @@ erDiagram
         int id PK
         int posted_by FK "HR user"
         varchar title
-        text description
-        text requirements
-        varchar employement_type "full-time, part-time, remote"
-        varchar location
+        varchar about
+        jsonb descriptions
+        jsonb requirements
+        jsonb additional_info
+        varchar employement_type "full-time, part-time, contract, internship"
+        varchar location "onsite, remote, hybrid"
         decimal min_salary
         decimal max_salary
         varchar status "open, closed, draft"
         timestamp created_at
         timestamp updated_at
-        timestamp deadline
     }
 
     %% ==========================================

@@ -1,6 +1,6 @@
 import { HttpError } from '../utils/HttpError.js';
 
-export function requireRole(role) {
+export function requireRole(required) {
   return function (req, res, next) {
     const userRole = req.user && req.user.role;
     if (!userRole) {
@@ -12,15 +12,12 @@ export function requireRole(role) {
         ),
       );
     }
-    if (userRole !== role) {
-      return next(
-        new HttpError(
-          403,
-          'Akses ditolak: Hanya admin yang dapat membuat akun HR',
-          'FORBIDDEN',
-        ),
-      );
+
+    const allowed = Array.isArray(required) ? required : [required];
+    if (!allowed.includes(userRole)) {
+      return next(new HttpError(403, 'Akses ditolak', 'FORBIDDEN'));
     }
+
     return next();
   };
 }

@@ -8,6 +8,7 @@ import {
   findById,
   updatePasswordById,
 } from '../models/users.model.js';
+import logger from '../config/logger.js';
 
 export async function registerJobseeker({ fullName, email, password }) {
   const existing = await findByEmail(email);
@@ -31,6 +32,7 @@ export async function registerJobseeker({ fullName, email, password }) {
       created_at: row.created_at,
     };
   } catch (err) {
+    logger.error('Error registering user', { error: err.message });
     // Handle unique constraint violation for email from PostgreSQL (error code 23505)
     if (err.code === '23505') {
       throw new HttpError(400, 'email already registered', 'EMAIL_EXISTS');
@@ -88,6 +90,7 @@ export async function changePassword({ userId, oldPassword, newPassword }) {
   if (!user) {
     throw new HttpError(404, 'User tidak ditemukan', 'USER_NOT_FOUND');
   }
+  logger.info('Change password request processed', { userId });
 
   const match = await bcrypt.compare(oldPassword, user.password);
   if (!match) {

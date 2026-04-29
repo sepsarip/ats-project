@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { HttpError } from '../utils/HttpError.js';
 import { findByEmail, createUser } from '../models/users.model.js';
+import logger from '../config/logger.js';
 
 export async function createHrUser({ fullName, email, password }) {
   const existing = await findByEmail(email);
@@ -17,6 +18,10 @@ export async function createHrUser({ fullName, email, password }) {
       password: hashed,
       role: 'hr',
     });
+    logger.info('HR user created successfully', {
+      userId: row.id,
+      fullName: row.full_name,
+    });
 
     return {
       id: row.id,
@@ -27,6 +32,7 @@ export async function createHrUser({ fullName, email, password }) {
       createdAt: row.created_at,
     };
   } catch (err) {
+    logger.error('Error creating HR user', { error: err.message });
     if (err && err.code === '23505') {
       throw new HttpError(400, 'Email sudah terdaftar', 'EMAIL_EXISTS');
     }
