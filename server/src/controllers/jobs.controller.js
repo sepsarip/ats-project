@@ -68,3 +68,22 @@ export const updateJob = asyncHandler(async (req, res) => {
     data: { job },
   });
 });
+
+export const deleteJob = asyncHandler(async (req, res) => {
+  const jobId = req.params.id;
+  const user = req.user && req.user.id;
+  logger.info('Delete job request received', { jobId, userId: user });
+
+  const deletedJob = await jobsService.deleteJob(user, jobId);
+
+  logger.info('Job deleted successfully', {
+    jobId: deletedJob?.id,
+    deletedBy: user,
+  });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Job deleted successfully',
+    data: { job: deletedJob },
+  });
+});

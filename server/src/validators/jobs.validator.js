@@ -142,3 +142,10 @@ export const updateJobValidation = [
     return true;
   }),
 ];
+
+export const deleteJobValidation = [
+  param('id')
+    .isInt({ min: 1 })
+    .withMessage('id must be a positive integer')
+    .toInt(),
+];

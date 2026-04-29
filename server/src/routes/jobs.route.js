@@ -9,6 +9,7 @@ import {
   listJobsValidation,
   getJobValidation,
   updateJobValidation,
+  deleteJobValidation,
 } from '../validators/jobs.validator.js';
 import { validate } from '../middleware/validate.middleware.js';
 import {
@@ -16,6 +17,7 @@ import {
   listJobs,
   getJob,
   updateJob,
+  deleteJob,
 } from '../controllers/jobs.controller.js';
 
 const router = express.Router();
@@ -40,6 +42,15 @@ router.put(
   updateJobValidation,
   validate,
   updateJob,
+);
+
+router.delete(
+  '/:id',
+  authMiddleware,
+  requireRole(['admin', 'hr']),
+  deleteJobValidation,
+  validate,
+  deleteJob,
 );
 
 export default router;

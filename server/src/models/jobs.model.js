@@ -167,3 +167,9 @@ export async function updateJob(id, fields) {
   const { rows } = await pool.query(q, values);
   return rows[0];
 }
+
+export async function deleteJob(id) {
+  const q = `DELETE FROM ats_jobs WHERE id = $1 RETURNING id`;
+  const { rows } = await pool.query(q, [id]);
+  return rows[0];
+}

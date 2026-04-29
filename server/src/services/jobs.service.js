@@ -141,3 +141,24 @@ export async function updateJob(userId, id, data) {
     throw new HttpError(500, 'Failed to update job', 'JOB_UPDATE_FAILED');
   }
 }
+
+export async function deleteJob(userId, id) {
+  if (!userId) {
+    throw new HttpError(401, 'Token is invalid or expired', 'INVALID_TOKEN');
+  }
+
+  try {
+    const existing = await jobsModel.getJobById(id);
+    if (!existing) {
+      throw new HttpError(404, 'Job not found', 'JOB_NOT_FOUND');
+    }
+
+    const deletedJob = await jobsModel.deleteJob(id);
+    logger.info('Job deleted from database', { jobId: id, deletedBy: userId });
+    return deletedJob;
+  } catch (err) {
+    if (err instanceof HttpError) throw err;
+    logger.error('Error deleting job', { jobId: id, error: err });
+    throw new HttpError(500, 'Failed to delete job', 'JOB_DELETE_FAILED');
+  }
+}
