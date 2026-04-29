@@ -50,3 +50,21 @@ export const getJob = asyncHandler(async (req, res) => {
     data: { job },
   });
 });
+
+export const updateJob = asyncHandler(async (req, res) => {
+  const jobId = req.params.id;
+  const payload = req.body;
+  const user = req.user && req.user.id;
+
+  logger.info('Update job request received', { jobId, userId: user });
+
+  const job = await jobsService.updateJob(user, jobId, payload);
+
+  logger.info('Job updated successfully', { jobId: job?.id, updatedBy: user });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Job updated successfully',
+    data: { job },
+  });
+});

@@ -133,3 +133,37 @@ export async function getJobById(id) {
   const { rows } = await pool.query(q, [id]);
   return rows[0];
 }
+
+export async function updateJob(id, fields) {
+  const q = `
+  UPDATE ats_jobs
+  SET title = COALESCE($1, title),
+      about = COALESCE($2, about),
+      requirements = COALESCE($3, requirements),
+      descriptions = COALESCE($4, descriptions),
+      additional_info = COALESCE($5, additional_info),
+      employment_type = COALESCE($6, employment_type),
+      location = COALESCE($7, location),
+      min_salary = COALESCE($8, min_salary),
+      max_salary = COALESCE($9, max_salary),
+      status = COALESCE($10, status),
+      updated_at = NOW()
+  WHERE id = $11
+  RETURNING id, title, about, employment_type, location, status, min_salary, max_salary, updated_at
+  `;
+  const values = [
+    fields.title,
+    fields.about,
+    fields.requirements ? JSON.stringify(fields.requirements) : null,
+    fields.descriptions ? JSON.stringify(fields.descriptions) : null,
+    fields.additional_info ? JSON.stringify(fields.additional_info) : null,
+    fields.employment_type,
+    fields.location,
+    fields.min_salary,
+    fields.max_salary,
+    fields.status,
+    id,
+  ];
+  const { rows } = await pool.query(q, values);
+  return rows[0];
+}

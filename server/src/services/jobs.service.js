@@ -107,3 +107,37 @@ export async function getJobById(id, user) {
     throw new HttpError(500, 'Failed to retrieve job', 'JOB_RETRIEVE_FAILED');
   }
 }
+
+export async function updateJob(userId, id, data) {
+  if (!userId) {
+    throw new HttpError(401, 'Token is invalid or expired', 'INVALID_TOKEN');
+  }
+
+  try {
+    const existing = await jobsModel.getJobById(id);
+    if (!existing) {
+      throw new HttpError(404, 'Job not found', 'JOB_NOT_FOUND');
+    }
+
+    const payload = {
+      title: data.title,
+      about: data.about,
+      descriptions: data.descriptions,
+      requirements: data.requirements,
+      additional_info: data.additional_info,
+      employment_type: data.employment_type,
+      location: data.location,
+      min_salary: data.min_salary ?? null,
+      max_salary: data.max_salary ?? null,
+      status: data.status,
+    };
+
+    const updated = await jobsModel.updateJob(id, payload);
+    logger.info('Job updated in database', { jobId: id, updatedBy: userId });
+    return updated;
+  } catch (err) {
+    if (err instanceof HttpError) throw err;
+    logger.error('Error updating job', { jobId: id, error: err });
+    throw new HttpError(500, 'Failed to update job', 'JOB_UPDATE_FAILED');
+  }
+}
