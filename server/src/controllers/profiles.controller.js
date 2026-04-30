@@ -16,4 +16,20 @@ export const updateMyProfile = asyncHandler(async (req, res) => {
   });
 });
 
-export default { updateMyProfile };
+export const uploadMyCv = asyncHandler(async (req, res) => {
+  const userId = req.user && req.user.id;
+  const file = req.file;
+
+  const data = await profilesService.uploadMyCv(userId, file);
+  logger.info('CV uploaded successfully', {
+    userId,
+    fileName: file?.originalname,
+    fileSize: file?.size,
+  });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'CV uploaded successfully',
+    data,
+  });
+});
