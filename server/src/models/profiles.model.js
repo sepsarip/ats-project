@@ -33,3 +33,35 @@ export async function upsertProfile(client, userId, payload) {
   const { rows } = await client.query(q, values);
   return rows[0] || null;
 }
+
+export async function findFullProfileByUserId(client, userId) {
+  const q = `
+    SELECT
+      u.id AS user_id,
+      u.full_name,
+      u.email,
+      p.id AS profile_id,
+      p.phone,
+      p.city,
+      p.province,
+      p.bio,
+      p.linkedin_url,
+      p.portfolio_url,
+      p.birth_date,
+      p.gender,
+      c.id AS cv_id,
+      c.file_name,
+      c.file_path,
+      c.mime_type,
+      c.file_size,
+      c.uploaded_at
+    FROM users u
+    LEFT JOIN profiles p ON p.user_id = u.id
+    LEFT JOIN cv_files c ON c.user_id = u.id
+    WHERE u.id = $1
+    LIMIT 1
+  `;
+
+  const { rows } = await client.query(q, [userId]);
+  return rows[0] || null;
+}

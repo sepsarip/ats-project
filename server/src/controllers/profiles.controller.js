@@ -33,3 +33,16 @@ export const uploadMyCv = asyncHandler(async (req, res) => {
     data,
   });
 });
+
+export const getMyProfile = asyncHandler(async (req, res) => {
+  const userId = req.user && req.user.id;
+
+  const data = await profilesService.getMyProfile(userId);
+  logger.info('Profile retrieved successfully', { userId });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Profile retrieved successfully',
+    data,
+  });
+});

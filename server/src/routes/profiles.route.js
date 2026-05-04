@@ -6,6 +6,7 @@ import updateProfileValidation from '../validators/profiles.validator.js';
 import {
   updateMyProfile,
   uploadMyCv,
+  getMyProfile,
 } from '../controllers/profiles.controller.js';
 import upload from '../middleware/upload.middleware.js';
 
@@ -19,6 +20,8 @@ router.put(
   validate,
   updateMyProfile,
 );
+
+router.get('/me', authMiddleware, requireRole('jobseeker'), getMyProfile);
 
 router.post(
   '/cv',

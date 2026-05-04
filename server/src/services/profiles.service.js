@@ -126,3 +126,56 @@ export async function uploadMyCv(userId, file) {
     client.release();
   }
 }
+
+export async function getMyProfile(userId) {
+  const client = await pool.connect();
+  try {
+    const row = await profilesModel.findFullProfileByUserId(client, userId);
+    if (!row) throw new HttpError(404, 'User not found', 'USER_NOT_FOUND');
+
+    const user = {
+      id: row.user_id,
+      fullName: row.full_name,
+      email: row.email,
+    };
+
+    let profile = null;
+    if (row.profile_id !== null) {
+      profile = {
+        id: row.profile_id,
+        phone: row.phone,
+        city: row.city,
+        province: row.province,
+        bio: row.bio,
+        linkedin_url: row.linkedin_url,
+        portfolio_url: row.portfolio_url,
+        birth_date: row.birth_date,
+        gender: row.gender,
+      };
+    }
+
+    let cv = null;
+    if (row.cv_id !== null) {
+      cv = {
+        id: row.cv_id,
+        file_name: row.file_name,
+        mime_type: row.mime_type,
+        file_path: row.file_path,
+        file_size: row.file_size,
+        uploaded_at: row.uploaded_at,
+      };
+    }
+
+    return { user, profile, cv };
+  } catch (err) {
+    if (err instanceof HttpError) throw err;
+    logger.error('Error fetching profile:', err);
+    throw new HttpError(
+      500,
+      'Failed to retrieve profile',
+      'PROFILE_RETRIEVE_FAILED',
+    );
+  } finally {
+    client.release();
+  }
+}
