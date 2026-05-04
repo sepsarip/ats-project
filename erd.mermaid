@@ -18,11 +18,14 @@ erDiagram
         int id PK
         int user_id FK
         varchar phone
-        varchar location
+        varchar address
         text bio
         varchar linkedin_url
         varchar portfolio_url
         date birth_date
+        varchar gender "male, female"
+        created_at timestamp "current_timestamp"
+        updated_at timestamp "current_timestamp"
     }
 
     %% ==========================================
@@ -66,7 +69,7 @@ erDiagram
         int user_id FK
         varchar file_name
         varchar file_path "S3/MinIO path/server storage"
-        varchar file_type "pdf"
+        varchar mime_type "application/pdf"
         int file_size
         text extracted_text "For AI processing"
         timestamp uploaded_at

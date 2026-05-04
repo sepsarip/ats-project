@@ -43,9 +43,10 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DATABASE_URL: ${DATABASE_URL}
-      AI_SERVICE_URL: http://ai-service:5001
+      AI_SERVICE_URL: ${AI_SERVICE_URL}
     volumes:
       - ./server/logs:/app/logs
+      - ./server/uploads:/app/uploads
     depends_on:
       postgres:
         condition: service_healthy

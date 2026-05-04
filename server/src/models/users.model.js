@@ -30,3 +30,16 @@ export async function updatePasswordById(id, hashedPassword) {
   const { rows } = await pool.query(q, values);
   return rows[0] || null;
 }
+
+export async function updateFullNameById(client, id, fullName) {
+  const q = `
+  UPDATE users
+  SET full_name = $2,
+    updated_at = NOW()
+  WHERE id = $1 
+  RETURNING id, full_name, email, updated_at
+  `;
+  const values = [id, fullName];
+  const { rows } = await client.query(q, values);
+  return rows[0] || null;
+}
