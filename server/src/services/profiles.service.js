@@ -179,3 +179,42 @@ export async function getMyProfile(userId) {
     client.release();
   }
 }
+
+export async function deleteMyCv(userId) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const row = await cvFilesModel.getByUserId(client, userId);
+    if (!row) {
+      throw new HttpError(404, 'CV not found', 'CV_NOT_FOUND');
+    }
+
+    const relPath = row.file_path && row.file_path.replace(/^\//, '');
+    const absPath = path.join(process.cwd(), relPath);
+
+    const deleted = await cvFilesModel.deleteByUserId(client, userId);
+
+    await client.query('COMMIT');
+
+    try {
+      await fs.unlink(absPath);
+      logger.info('CV file deleted from disk', { userId, file: absPath });
+    } catch (err) {
+      logger.warn('Failed to delete CV file from disk', {
+        userId,
+        file: absPath,
+        error: err && err.message,
+      });
+    }
+
+    return { status: 'success', message: 'CV deleted successfully' };
+  } catch (err) {
+    await client.query('ROLLBACK');
+    if (err instanceof HttpError) throw err;
+    logger.error('Error deleting CV:', err);
+    throw new HttpError(500, 'Failed to delete CV', 'CV_DELETE_FAILED');
+  } finally {
+    client.release();
+  }
+}

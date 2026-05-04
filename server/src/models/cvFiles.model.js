@@ -34,3 +34,15 @@ export async function updateExtractedText(userId, extracted_text) {
   const { rows } = await pool.query(q, [userId, extracted_text]);
   return rows[0] || null;
 }
+
+export async function getByUserId(client, userId) {
+  const q = `SELECT * FROM cv_files WHERE user_id = $1 LIMIT 1`;
+  const { rows } = await client.query(q, [userId]);
+  return rows[0] || null;
+}
+
+export async function deleteByUserId(client, userId) {
+  const q = `DELETE FROM cv_files WHERE user_id = $1 RETURNING *`;
+  const { rows } = await client.query(q, [userId]);
+  return rows[0] || null;
+}

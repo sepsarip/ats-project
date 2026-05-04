@@ -46,3 +46,15 @@ export const getMyProfile = asyncHandler(async (req, res) => {
     data,
   });
 });
+
+export const deleteMyCv = asyncHandler(async (req, res) => {
+  const userId = req.user && req.user.id;
+
+  const data = await profilesService.deleteMyCv(userId);
+  logger.info('CV deleted successfully', { userId });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'CV deleted successfully',
+  });
+});

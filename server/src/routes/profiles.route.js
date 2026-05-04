@@ -7,6 +7,7 @@ import {
   updateMyProfile,
   uploadMyCv,
   getMyProfile,
+  deleteMyCv,
 } from '../controllers/profiles.controller.js';
 import upload from '../middleware/upload.middleware.js';
 
@@ -30,5 +31,7 @@ router.post(
   upload.single('cv'),
   uploadMyCv,
 );
+
+router.delete('/cv', authMiddleware, requireRole('jobseeker'), deleteMyCv);
 
 export default router;
