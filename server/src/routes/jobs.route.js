@@ -19,9 +19,12 @@ import {
   updateJob,
   deleteJob,
 } from '../controllers/jobs.controller.js';
+import { applyValidation } from '../validators/applications.validator.js';
+import { applyToJob } from '../controllers/applications.controller.js';
 
 const router = express.Router();
 
+// Job routes
 router.post(
   '/',
   authMiddleware,
@@ -51,6 +54,16 @@ router.delete(
   deleteJobValidation,
   validate,
   deleteJob,
+);
+
+// Applications route
+router.post(
+  '/:jobId/apply',
+  authMiddleware,
+  requireRole(['jobseeker']),
+  applyValidation,
+  validate,
+  applyToJob,
 );
 
 export default router;
