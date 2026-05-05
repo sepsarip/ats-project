@@ -64,7 +64,8 @@ export async function listApplicationsByUser(
   return rows;
 }
 
-export async function countApplicationsByJob(jobId, status = null) {
+export async function countApplicationsByJob(jobId, filters = {}) {
+  const { status, gender, city, province } = filters;
   const conditions = [];
   const values = [];
   let idx = 1;
@@ -74,10 +75,23 @@ export async function countApplicationsByJob(jobId, status = null) {
     conditions.push(`a.status = $${idx++}`);
     values.push(status);
   }
+  if (gender) {
+    conditions.push(`p.gender = $${idx++}`);
+    values.push(gender);
+  }
+  if (city) {
+    conditions.push(`p.city ILIKE $${idx++}`);
+    values.push(`${city}%`);
+  }
+  if (province) {
+    conditions.push(`p.province ILIKE $${idx++}`);
+    values.push(`${province}%`);
+  }
 
   const q = `
     SELECT COUNT(*)::int AS total
     FROM applications a
+    LEFT JOIN profiles p ON a.user_id = p.user_id
     WHERE ${conditions.join(' AND ')}
   `;
 
@@ -87,9 +101,10 @@ export async function countApplicationsByJob(jobId, status = null) {
 
 export async function listCandidatesByJob(
   jobId,
-  status = null,
+  filters = {},
   options = { limit: 10, offset: 0 },
 ) {
+  const { status, gender, city, province } = filters;
   const conditions = [];
   const values = [];
   let idx = 1;
@@ -98,6 +113,18 @@ export async function listCandidatesByJob(
   if (status) {
     conditions.push(`a.status = $${idx++}`);
     values.push(status);
+  }
+  if (gender) {
+    conditions.push(`p.gender = $${idx++}`);
+    values.push(gender);
+  }
+  if (city) {
+    conditions.push(`p.city ILIKE $${idx++}`);
+    values.push(`${city}%`);
+  }
+  if (province) {
+    conditions.push(`p.province ILIKE $${idx++}`);
+    values.push(`${province}%`);
   }
 
   const q = `
@@ -108,9 +135,13 @@ export async function listCandidatesByJob(
       a.applied_at,
       u.id AS user_id,
       u.full_name,
-      u.email
+      u.email,
+      p.city,
+      p.province,
+      p.gender
     FROM applications a
     LEFT JOIN users u ON a.user_id = u.id
+    LEFT JOIN profiles p ON u.id = p.user_id
     WHERE ${conditions.join(' AND ')}
     ORDER BY a.applied_at DESC
     LIMIT $${idx} OFFSET $${idx + 1}

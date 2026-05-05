@@ -154,7 +154,13 @@ export async function getCandidatesByJob(query, jobId) {
   const page = Number(query.page) || 1;
   const limit = Math.min(Number(query.limit) || 10, 50);
   const offset = (page - 1) * limit;
-  const status = query.status || null;
+
+  const filters = {
+    status: query.status || null,
+    gender: query.gender || null,
+    city: query.city || null,
+    province: query.province || null,
+  };
 
   try {
     const job = await jobsModel.getJobById(jobId);
@@ -162,8 +168,11 @@ export async function getCandidatesByJob(query, jobId) {
       throw new HttpError(404, 'Job not found', 'JOB_NOT_FOUND');
     }
 
-    const total = await applicationsModel.countApplicationsByJob(jobId, status);
-    const rows = await applicationsModel.listCandidatesByJob(jobId, status, {
+    const total = await applicationsModel.countApplicationsByJob(
+      jobId,
+      filters,
+    );
+    const rows = await applicationsModel.listCandidatesByJob(jobId, filters, {
       limit,
       offset,
     });
@@ -174,6 +183,9 @@ export async function getCandidatesByJob(query, jobId) {
         id: r.user_id,
         full_name: r.full_name,
         email: r.email,
+        city: r.city,
+        province: r.province,
+        gender: r.gender,
       },
       status: r.status,
       score: r.score != null ? Number(r.score) : null,
