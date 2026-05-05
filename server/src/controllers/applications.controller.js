@@ -22,3 +22,26 @@ export const applyToJob = asyncHandler(async (req, res) => {
     data: { application },
   });
 });
+
+export const getMyApplications = asyncHandler(async (req, res) => {
+  const userId = req.user && req.user.id;
+  const query = req.query || {};
+
+  logger.info('Get my applications request received', { userId, query });
+
+  const { applications, meta } = await applicationsService.getMyApplications(
+    query,
+    userId,
+  );
+
+  logger.info('My applications retrieved', {
+    userId,
+    count: applications.length,
+  });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Applications retrieved successfully',
+    data: { applications, meta },
+  });
+});

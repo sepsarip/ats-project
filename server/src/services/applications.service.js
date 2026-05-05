@@ -96,3 +96,56 @@ export async function applyToJob(userId, jobId) {
     client.release();
   }
 }
+
+export async function getMyApplications(query, userId) {
+  const page = Number(query.page) || 1;
+  const limit = Math.min(Number(query.limit) || 10, 50);
+  const offset = (page - 1) * limit;
+
+  try {
+    const total = await applicationsModel.countApplicationsByUser(userId);
+    const rows = await applicationsModel.listApplicationsByUser(userId, {
+      limit,
+      offset,
+    });
+
+    const applications = rows.map((r) => ({
+      id: r.id,
+      job: {
+        id: r.job_id,
+        title: r.job_title,
+        employment_type: r.job_employment_type,
+        location: r.job_location,
+        min_salary: r.job_min_salary,
+        max_salary: r.job_max_salary,
+        status: r.job_status,
+      },
+      status: r.status,
+      score: r.score != null ? Number(r.score) : null,
+      applied_at: r.applied_at,
+      updated_at: r.updated_at,
+    }));
+
+    const totalPages = Math.ceil(total / limit) || 0;
+
+    const meta = {
+      page,
+      limit,
+      total,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1 && page <= totalPages,
+    };
+
+    logger.info('My applications fetched', { userId, page, limit, total });
+
+    return { applications, meta };
+  } catch (err) {
+    logger.error('Error retrieving my applications', { error: err });
+    throw new HttpError(
+      500,
+      'Failed to retrieve applications',
+      'APPLICATION_LIST_FAILED',
+    );
+  }
+}
