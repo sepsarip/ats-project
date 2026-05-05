@@ -63,3 +63,62 @@ export async function listApplicationsByUser(
   const { rows } = await pool.query(q, values);
   return rows;
 }
+
+export async function countApplicationsByJob(jobId, status = null) {
+  const conditions = [];
+  const values = [];
+  let idx = 1;
+  conditions.push(`a.job_id = $${idx++}`);
+  values.push(jobId);
+  if (status) {
+    conditions.push(`a.status = $${idx++}`);
+    values.push(status);
+  }
+
+  const q = `
+    SELECT COUNT(*)::int AS total
+    FROM applications a
+    WHERE ${conditions.join(' AND ')}
+  `;
+
+  const { rows } = await pool.query(q, values);
+  return rows[0]?.total ?? 0;
+}
+
+export async function listCandidatesByJob(
+  jobId,
+  status = null,
+  options = { limit: 10, offset: 0 },
+) {
+  const conditions = [];
+  const values = [];
+  let idx = 1;
+  conditions.push(`a.job_id = $${idx++}`);
+  values.push(jobId);
+  if (status) {
+    conditions.push(`a.status = $${idx++}`);
+    values.push(status);
+  }
+
+  const q = `
+    SELECT
+      a.id AS application_id,
+      a.status,
+      a.score,
+      a.applied_at,
+      u.id AS user_id,
+      u.full_name,
+      u.email
+    FROM applications a
+    LEFT JOIN users u ON a.user_id = u.id
+    WHERE ${conditions.join(' AND ')}
+    ORDER BY a.applied_at DESC
+    LIMIT $${idx} OFFSET $${idx + 1}
+  `;
+
+  values.push(options.limit);
+  values.push(options.offset);
+
+  const { rows } = await pool.query(q, values);
+  return rows;
+}

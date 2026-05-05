@@ -149,3 +149,70 @@ export async function getMyApplications(query, userId) {
     );
   }
 }
+
+export async function getCandidatesByJob(query, jobId) {
+  const page = Number(query.page) || 1;
+  const limit = Math.min(Number(query.limit) || 10, 50);
+  const offset = (page - 1) * limit;
+  const status = query.status || null;
+
+  try {
+    const job = await jobsModel.getJobById(jobId);
+    if (!job) {
+      throw new HttpError(404, 'Job not found', 'JOB_NOT_FOUND');
+    }
+
+    const total = await applicationsModel.countApplicationsByJob(jobId, status);
+    const rows = await applicationsModel.listCandidatesByJob(jobId, status, {
+      limit,
+      offset,
+    });
+
+    const candidates = rows.map((r) => ({
+      application_id: r.application_id,
+      user: {
+        id: r.user_id,
+        full_name: r.full_name,
+        email: r.email,
+      },
+      status: r.status,
+      score: r.score != null ? Number(r.score) : null,
+      applied_at: r.applied_at,
+    }));
+
+    const totalPages = Math.ceil(total / limit) || 0;
+
+    const meta = {
+      page,
+      limit,
+      total,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1 && page <= totalPages,
+    };
+
+    logger.info('Candidates fetched by specific job', {
+      jobId,
+      page,
+      limit,
+      total,
+    });
+
+    return {
+      job: { id: job.id, title: job.title, status: job.status },
+      candidates,
+      meta,
+    };
+  } catch (err) {
+    logger.error('Error retrieving candidates by specific job', {
+      error: err,
+      jobId,
+    });
+    if (err instanceof HttpError) throw err;
+    throw new HttpError(
+      500,
+      'Failed to retrieve candidates',
+      'CANDIDATE_LIST_FAILED',
+    );
+  }
+}

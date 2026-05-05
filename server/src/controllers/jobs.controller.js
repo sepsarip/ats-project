@@ -1,4 +1,5 @@
 import * as jobsService from '../services/jobs.service.js';
+import * as applicationsService from '../services/applications.service.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import logger from '../config/logger.js';
 
@@ -85,5 +86,20 @@ export const deleteJob = asyncHandler(async (req, res) => {
     status: 'success',
     message: 'Job deleted successfully',
     data: { job: deletedJob },
+  });
+});
+
+export const getJobCandidates = asyncHandler(async (req, res) => {
+  const jobId = req.params.jobId;
+  const query = req.query || {};
+
+  const result = await applicationsService.getCandidatesByJob(query, jobId);
+
+  logger.info('Job candidates retrieved', { jobId });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Candidates retrieved successfully',
+    data: result,
   });
 });
