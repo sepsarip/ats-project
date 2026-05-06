@@ -1,6 +1,9 @@
 import * as jobsService from '../services/jobs.service.js';
 import * as applicationsService from '../services/applications.service.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { HttpError } from '../utils/HttpError.js';
+import fs from 'fs/promises';
+import path from 'path';
 import logger from '../config/logger.js';
 
 export const createJob = asyncHandler(async (req, res) => {
@@ -116,5 +119,45 @@ export const getJobCandidateDetail = asyncHandler(async (req, res) => {
     status: 'success',
     message: 'Candidate detail retrieved successfully',
     data: result,
+  });
+});
+
+export const downloadCandidateCv = asyncHandler(async (req, res) => {
+  const jobId = req.params.jobId;
+  const userId = req.params.userId;
+
+  const info = await applicationsService.getCandidateCvDownloadInfo(
+    jobId,
+    userId,
+  );
+
+  const relPath = info.file_path.replace(/^\//, '');
+
+  const baseDir = path.resolve(process.cwd(), 'uploads', 'cv');
+  const absPath = path.resolve(process.cwd(), relPath);
+
+  if (!absPath.startsWith(baseDir + path.sep)) {
+    throw new HttpError(400, 'Invalid file path', 'INVALID_FILE_PATH');
+  }
+
+  try {
+    await fs.access(absPath);
+  } catch (err) {
+    logger.warn('CV file not found on disk', { jobId, userId, file: absPath });
+    throw new HttpError(404, 'File not found', 'FILE_NOT_FOUND');
+  }
+
+  const fileName = info.file_name || path.basename(absPath);
+
+  res.download(absPath, fileName, (err) => {
+    if (err) {
+      logger.error('Error downloading CV file', { error: err, file: absPath });
+    } else {
+      logger.info('CV file downloaded successfully', {
+        jobId,
+        userId,
+        file: absPath,
+      });
+    }
   });
 });

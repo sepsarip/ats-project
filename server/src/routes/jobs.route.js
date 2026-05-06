@@ -20,6 +20,7 @@ import {
   deleteJob,
   getJobCandidates,
   getJobCandidateDetail,
+  downloadCandidateCv,
 } from '../controllers/jobs.controller.js';
 import {
   applyValidation,
@@ -94,6 +95,16 @@ router.get(
   candidateDetailValidation,
   validate,
   getJobCandidateDetail,
+);
+
+// Download candidate CV for a specific job and user
+router.get(
+  '/:jobId/candidates/:userId/cv/download',
+  authMiddleware,
+  requireRole(['admin', 'hr']),
+  candidateDetailValidation,
+  validate,
+  downloadCandidateCv,
 );
 
 export default router;

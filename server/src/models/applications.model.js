@@ -191,3 +191,19 @@ export async function getApplicationWithCandidateDetail(jobId, userId) {
   const { rows } = await pool.query(q, values);
   return rows[0] || null;
 }
+
+export async function getCandidatesCvFile(jobId, userId) {
+  const q = `
+    SELECT
+      cv.file_name,
+      cv.mime_type,
+      cv.file_path
+    FROM applications a
+    LEFT JOIN cv_files cv ON a.cv_file_id = cv.id
+    WHERE a.job_id = $1 AND a.user_id = $2
+    LIMIT 1
+  `;
+  const values = [jobId, userId];
+  const { rows } = await pool.query(q, values);
+  return rows[0] || null;
+}

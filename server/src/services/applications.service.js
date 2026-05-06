@@ -295,3 +295,41 @@ export async function getCandidateDetail(jobId, userId) {
     );
   }
 }
+
+export async function getCandidateCvDownloadInfo(jobId, userId) {
+  try {
+    const job = await jobsModel.getJobById(jobId);
+    if (!job) throw new HttpError(404, 'Job not found', 'JOB_NOT_FOUND');
+
+    const row = await applicationsModel.getCandidatesCvFile(jobId, userId);
+
+    if (!row) {
+      throw new HttpError(
+        404,
+        'Application or CV not found for given job and user',
+        'CV_NOT_FOUND',
+      );
+    }
+    if (!row.file_path) {
+      throw new HttpError(404, 'CV not found', 'CV_NOT_FOUND');
+    }
+
+    return {
+      file_name: row.file_name,
+      mime_type: row.mime_type,
+      file_path: row.file_path,
+    };
+  } catch (err) {
+    if (err instanceof HttpError) throw err;
+    logger.error('Error retrieving CV download info', {
+      error: err,
+      jobId,
+      userId,
+    });
+    throw new HttpError(
+      500,
+      'Failed to retrieve CV info',
+      'CV_RETRIEVE_FAILED',
+    );
+  }
+}

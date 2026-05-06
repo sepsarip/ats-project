@@ -33,7 +33,5 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 app.listen(env.port, () => {
-  logger.info(
-    `ATS server listening on port ${env.port} timestamp ${new Date().toISOString()}`,
-  );
+  logger.info(`ATS server listening on port ${env.port}`);
 });
