@@ -103,3 +103,18 @@ export const getJobCandidates = asyncHandler(async (req, res) => {
     data: result,
   });
 });
+
+export const getJobCandidateDetail = asyncHandler(async (req, res) => {
+  const jobId = req.params.jobId;
+  const userId = req.params.userId;
+
+  const result = await applicationsService.getCandidateDetail(jobId, userId);
+
+  logger.info('Job candidate detail retrieved', { jobId, userId });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Candidate detail retrieved successfully',
+    data: result,
+  });
+});

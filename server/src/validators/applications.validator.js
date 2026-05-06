@@ -40,3 +40,14 @@ export const candidatesValidation = [
     .isIn(['applied', 'rejected', 'interview', 'offered', 'hired'])
     .withMessage('status is invalid'),
 ];
+
+export const candidateDetailValidation = [
+  param('jobId')
+    .isInt({ min: 1 })
+    .withMessage('jobId must be a positive integer')
+    .toInt(),
+  param('userId')
+    .isInt({ min: 1 })
+    .withMessage('userId must be a positive integer')
+    .toInt(),
+];

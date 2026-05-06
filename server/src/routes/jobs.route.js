@@ -18,11 +18,15 @@ import {
   getJob,
   updateJob,
   deleteJob,
+  getJobCandidates,
+  getJobCandidateDetail,
 } from '../controllers/jobs.controller.js';
-import { applyValidation } from '../validators/applications.validator.js';
+import {
+  applyValidation,
+  candidatesValidation,
+  candidateDetailValidation,
+} from '../validators/applications.validator.js';
 import { applyToJob } from '../controllers/applications.controller.js';
-import { candidatesValidation } from '../validators/applications.validator.js';
-import { getJobCandidates } from '../controllers/jobs.controller.js';
 
 const router = express.Router();
 
@@ -80,6 +84,16 @@ router.get(
   candidatesValidation,
   validate,
   getJobCandidates,
+);
+
+// Candidate detail for a specific job
+router.get(
+  '/:jobId/candidates/:userId',
+  authMiddleware,
+  requireRole(['admin', 'hr']),
+  candidateDetailValidation,
+  validate,
+  getJobCandidateDetail,
 );
 
 export default router;

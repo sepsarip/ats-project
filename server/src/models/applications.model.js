@@ -153,3 +153,41 @@ export async function listCandidatesByJob(
   const { rows } = await pool.query(q, values);
   return rows;
 }
+
+export async function getApplicationWithCandidateDetail(jobId, userId) {
+  const q = `
+    SELECT
+      a.id AS application_id,
+      a.status AS application_status,
+      a.score AS application_score,
+      a.applied_at AS application_applied_at,
+      j.id AS job_id,
+      j.title AS job_title,
+      j.status AS job_status,
+      u.id AS user_id,
+      u.full_name AS user_full_name,
+      u.email AS user_email,
+      p.phone AS profile_phone,
+      p.city AS profile_city,
+      p.province AS profile_province,
+      p.gender AS profile_gender,
+      p.bio AS profile_bio,
+      p.linkedin_url AS profile_linkedin_url,
+      p.portfolio_url AS profile_portfolio_url,
+      p.birth_date AS profile_birth_date,
+      cv.file_name AS cv_file_name,
+      cv.mime_type AS cv_mime_type,
+      cv.file_path AS cv_file_path,
+      cv.uploaded_at AS cv_uploaded_at
+    FROM applications a
+    LEFT JOIN ats_jobs j ON a.job_id = j.id
+    LEFT JOIN users u ON a.user_id = u.id
+    LEFT JOIN profiles p ON u.id = p.user_id
+    LEFT JOIN cv_files cv ON a.cv_file_id = cv.id
+    WHERE a.job_id = $1 AND a.user_id = $2
+    LIMIT 1
+  `;
+  const values = [jobId, userId];
+  const { rows } = await pool.query(q, values);
+  return rows[0] || null;
+}

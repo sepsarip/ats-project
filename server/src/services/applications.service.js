@@ -228,3 +228,70 @@ export async function getCandidatesByJob(query, jobId) {
     );
   }
 }
+
+export async function getCandidateDetail(jobId, userId) {
+  try {
+    const job = await jobsModel.getJobById(jobId);
+    if (!job) {
+      throw new HttpError(404, 'Job not found', 'JOB_NOT_FOUND');
+    }
+
+    const row = await applicationsModel.getApplicationWithCandidateDetail(
+      jobId,
+      userId,
+    );
+
+    if (!row) {
+      throw new HttpError(
+        404,
+        'Application not found for given job and user',
+        'APPLICATION_NOT_FOUND',
+      );
+    }
+
+    const result = {
+      job: { id: row.job_id, title: row.job_title, status: row.job_status },
+      application: {
+        id: row.application_id,
+        status: row.application_status,
+        score:
+          row.application_score != null ? Number(row.application_score) : null,
+        applied_at: row.application_applied_at,
+      },
+      user: {
+        id: row.user_id,
+        fullName: row.user_full_name,
+        email: row.user_email,
+      },
+      profile: {
+        phone: row.profile_phone,
+        city: row.profile_city,
+        province: row.profile_province,
+        bio: row.profile_bio,
+        linkedin_url: row.profile_linkedin_url,
+        portfolio_url: row.profile_portfolio_url,
+        birth_date: row.profile_birth_date,
+      },
+      cv: {
+        file_name: row.cv_file_name,
+        file_path: row.cv_file_path,
+        mime_type: row.cv_mime_type,
+      },
+    };
+
+    logger.info('Candidate detail fetched', { jobId, userId });
+    return result;
+  } catch (err) {
+    logger.error('Error fetching candidate detail', {
+      error: err,
+      jobId,
+      userId,
+    });
+    if (err instanceof HttpError) throw err;
+    throw new HttpError(
+      500,
+      'Failed to retrieve candidate detail',
+      'CANDIDATE_DETAIL_FAILED',
+    );
+  }
+}
