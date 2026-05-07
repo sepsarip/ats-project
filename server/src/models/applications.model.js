@@ -207,3 +207,30 @@ export async function getCandidatesCvFile(jobId, userId) {
   const { rows } = await pool.query(q, values);
   return rows[0] || null;
 }
+
+export async function getApplicationById(client, applicationId) {
+  const q = `
+    SELECT id, status, score, updated_at
+    FROM applications
+    WHERE id = $1
+    LIMIT 1
+  `;
+  const { rows } = await client.query(q, [applicationId]);
+  return rows[0] || null;
+}
+
+export async function updateApplicationStatusById(
+  client,
+  applicationId,
+  status,
+) {
+  const q = `
+    UPDATE applications
+    SET status = $1, updated_at = current_timestamp
+    WHERE id = $2
+    RETURNING id, status, score, updated_at
+  `;
+  const values = [status, applicationId];
+  const { rows } = await client.query(q, values);
+  return rows[0] || null;
+}

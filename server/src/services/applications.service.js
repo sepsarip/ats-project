@@ -333,3 +333,59 @@ export async function getCandidateCvDownloadInfo(jobId, userId) {
     );
   }
 }
+
+export async function updateApplicationStatus(applicationId, status) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const application = await applicationsModel.getApplicationById(
+      client,
+      applicationId,
+    );
+    if (!application) {
+      throw new HttpError(
+        404,
+        'Application not found',
+        'APPLICATION_NOT_FOUND',
+      );
+    }
+
+    // If the status is the same as current, just return without updating
+    if (application.status === status) {
+      await client.query('COMMIT');
+      return {
+        id: application.id,
+        status: application.status,
+        score: application.score != null ? Number(application.score) : null,
+        updated_at: application.updated_at,
+      };
+    }
+
+    const updated = await applicationsModel.updateApplicationStatusById(
+      client,
+      applicationId,
+      status,
+    );
+
+    await client.query('COMMIT');
+
+    return {
+      id: updated.id,
+      status: updated.status,
+      score: updated.score != null ? Number(updated.score) : null,
+      updated_at: updated.updated_at,
+    };
+  } catch (err) {
+    await client.query('ROLLBACK');
+    if (err instanceof HttpError) throw err;
+    logger.error('Error updating application status', { error: err });
+    throw new HttpError(
+      500,
+      'Failed to update application status',
+      'UPDATE_FAILED',
+    );
+  } finally {
+    client.release();
+  }
+}

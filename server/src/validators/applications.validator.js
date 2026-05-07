@@ -1,4 +1,4 @@
-import { param, query } from 'express-validator';
+import { param, query, body } from 'express-validator';
 
 export const applyValidation = [
   param('jobId')
@@ -50,4 +50,17 @@ export const candidateDetailValidation = [
     .isInt({ min: 1 })
     .withMessage('userId must be a positive integer')
     .toInt(),
+];
+
+export const updateApplicationStatusValidation = [
+  param('applicationId')
+    .isInt({ min: 1 })
+    .withMessage('applicationId must be a positive integer')
+    .toInt(),
+  body('status')
+    .exists()
+    .withMessage('status is required')
+    .bail()
+    .isIn(['applied', 'rejected', 'interview', 'offered', 'hired'])
+    .withMessage('status is invalid'),
 ];
