@@ -1,3 +1,24 @@
+# IDE
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor Backups
+*~
+*.swp
+
 # Logs
 logs
 *.log
@@ -137,3 +158,6 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Uploaded files
+uploads/

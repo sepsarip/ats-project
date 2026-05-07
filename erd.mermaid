@@ -1,0 +1,93 @@
+erDiagram
+    direction LR
+    %% ==========================================
+    %% USERS & AUTHENTICATION
+    %% ==========================================
+    USERS {
+        int id PK
+        varchar full_name
+        varchar email "unique"
+        varchar password
+        varchar role "jobseeker, hr, admin"
+        boolean is_active "default true"
+        timestamp created_at "current_timestamp"
+        timestamp updated_at "current_timestamp"
+    }
+
+    PROFILES {
+        int id PK
+        int user_id FK
+        varchar phone
+        varchar address
+        text bio
+        varchar linkedin_url
+        varchar portfolio_url
+        date birth_date
+        varchar gender "male, female"
+        created_at timestamp "current_timestamp"
+        updated_at timestamp "current_timestamp"
+    }
+
+    %% ==========================================
+    %% JOB POSTINGS
+    %% ==========================================
+    JOBS {
+        int id PK
+        int posted_by FK "HR user"
+        varchar title
+        varchar about
+        jsonb descriptions
+        jsonb requirements
+        jsonb additional_info
+        varchar employement_type "full-time, part-time, contract, internship"
+        varchar location "onsite, remote, hybrid"
+        decimal min_salary
+        decimal max_salary
+        varchar status "open, closed, draft"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    %% ==========================================
+    %% CANDIDATES & APPLICATIONS
+    %% ==========================================
+    APPLICATIONS {
+        int id PK
+        int job_id FK
+        int user_id FK "Jobseeker"
+        int cv_file_id FK "CV_FILES"
+        varchar status "applied, rejected, interview, offered, hired"
+        timestamp applied_at
+        timestamp updated_at
+        decimal score "0-100"
+    }
+
+    %% ==========================================
+    %% CV/RESUME STORAGE
+    %% ==========================================
+    CV_FILES {
+        int id PK
+        int user_id FK
+        varchar file_name
+        varchar file_path "S3/MinIO path/server storage"
+        varchar mime_type "application/pdf"
+        int file_size
+        text extracted_text "For AI processing"
+        timestamp uploaded_at
+    }
+
+    %% ==========================================
+    %% RELATIONSHIPS
+    %% ==========================================
+    USERS ||--o| PROFILES : "has"
+    USERS ||--o| APPLICATIONS : "submits"
+    USERS ||--o| CV_FILES : "uploads"
+    USERS ||--o{ JOBS : "posts"
+    JOBS ||--o{ APPLICATIONS : "receives"
+    APPLICATIONS ||--|| CV_FILES : "uses"
+
+    %% ==========================================
+    %% STYLING (Background Putih, Garis Hitam, Text Hitam)
+    %% ==========================================
+    classDef default fill:#FFFFFF,stroke:#000000,stroke-width:2px,color:#000000
+    class USER,PROFILES,JOBS,APPLICATIONS,CV_FILES default
