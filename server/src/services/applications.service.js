@@ -149,3 +149,243 @@ export async function getMyApplications(query, userId) {
     );
   }
 }
+
+export async function getCandidatesByJob(query, jobId) {
+  const page = Number(query.page) || 1;
+  const limit = Math.min(Number(query.limit) || 10, 50);
+  const offset = (page - 1) * limit;
+
+  const filters = {
+    status: query.status || null,
+    gender: query.gender || null,
+    city: query.city || null,
+    province: query.province || null,
+  };
+
+  try {
+    const job = await jobsModel.getJobById(jobId);
+    if (!job) {
+      throw new HttpError(404, 'Job not found', 'JOB_NOT_FOUND');
+    }
+
+    const total = await applicationsModel.countApplicationsByJob(
+      jobId,
+      filters,
+    );
+    const rows = await applicationsModel.listCandidatesByJob(jobId, filters, {
+      limit,
+      offset,
+    });
+
+    const candidates = rows.map((r) => ({
+      application_id: r.application_id,
+      user: {
+        id: r.user_id,
+        full_name: r.full_name,
+        email: r.email,
+        city: r.city,
+        province: r.province,
+        gender: r.gender,
+      },
+      status: r.status,
+      score: r.score != null ? Number(r.score) : null,
+      applied_at: r.applied_at,
+    }));
+
+    const totalPages = Math.ceil(total / limit) || 0;
+
+    const meta = {
+      page,
+      limit,
+      total,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1 && page <= totalPages,
+    };
+
+    logger.info('Candidates fetched by specific job', {
+      jobId,
+      page,
+      limit,
+      total,
+    });
+
+    return {
+      job: { id: job.id, title: job.title, status: job.status },
+      candidates,
+      meta,
+    };
+  } catch (err) {
+    logger.error('Error retrieving candidates by specific job', {
+      error: err,
+      jobId,
+    });
+    if (err instanceof HttpError) throw err;
+    throw new HttpError(
+      500,
+      'Failed to retrieve candidates',
+      'CANDIDATE_LIST_FAILED',
+    );
+  }
+}
+
+export async function getCandidateDetail(jobId, userId) {
+  try {
+    const job = await jobsModel.getJobById(jobId);
+    if (!job) {
+      throw new HttpError(404, 'Job not found', 'JOB_NOT_FOUND');
+    }
+
+    const row = await applicationsModel.getApplicationWithCandidateDetail(
+      jobId,
+      userId,
+    );
+
+    if (!row) {
+      throw new HttpError(
+        404,
+        'Application not found for given job and user',
+        'APPLICATION_NOT_FOUND',
+      );
+    }
+
+    const result = {
+      job: { id: row.job_id, title: row.job_title, status: row.job_status },
+      application: {
+        id: row.application_id,
+        status: row.application_status,
+        score:
+          row.application_score != null ? Number(row.application_score) : null,
+        applied_at: row.application_applied_at,
+      },
+      user: {
+        id: row.user_id,
+        fullName: row.user_full_name,
+        email: row.user_email,
+      },
+      profile: {
+        phone: row.profile_phone,
+        city: row.profile_city,
+        province: row.profile_province,
+        bio: row.profile_bio,
+        linkedin_url: row.profile_linkedin_url,
+        portfolio_url: row.profile_portfolio_url,
+        birth_date: row.profile_birth_date,
+      },
+      cv: {
+        file_name: row.cv_file_name,
+        file_path: row.cv_file_path,
+        mime_type: row.cv_mime_type,
+      },
+    };
+
+    logger.info('Candidate detail fetched', { jobId, userId });
+    return result;
+  } catch (err) {
+    logger.error('Error fetching candidate detail', {
+      error: err,
+      jobId,
+      userId,
+    });
+    if (err instanceof HttpError) throw err;
+    throw new HttpError(
+      500,
+      'Failed to retrieve candidate detail',
+      'CANDIDATE_DETAIL_FAILED',
+    );
+  }
+}
+
+export async function getCandidateCvDownloadInfo(jobId, userId) {
+  try {
+    const job = await jobsModel.getJobById(jobId);
+    if (!job) throw new HttpError(404, 'Job not found', 'JOB_NOT_FOUND');
+
+    const row = await applicationsModel.getCandidatesCvFile(jobId, userId);
+
+    if (!row) {
+      throw new HttpError(
+        404,
+        'Application or CV not found for given job and user',
+        'CV_NOT_FOUND',
+      );
+    }
+    if (!row.file_path) {
+      throw new HttpError(404, 'CV not found', 'CV_NOT_FOUND');
+    }
+
+    return {
+      file_name: row.file_name,
+      mime_type: row.mime_type,
+      file_path: row.file_path,
+    };
+  } catch (err) {
+    if (err instanceof HttpError) throw err;
+    logger.error('Error retrieving CV download info', {
+      error: err,
+      jobId,
+      userId,
+    });
+    throw new HttpError(
+      500,
+      'Failed to retrieve CV info',
+      'CV_RETRIEVE_FAILED',
+    );
+  }
+}
+
+export async function updateApplicationStatus(applicationId, status) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const application = await applicationsModel.getApplicationById(
+      client,
+      applicationId,
+    );
+    if (!application) {
+      throw new HttpError(
+        404,
+        'Application not found',
+        'APPLICATION_NOT_FOUND',
+      );
+    }
+
+    // If the status is the same as current, just return without updating
+    if (application.status === status) {
+      await client.query('COMMIT');
+      return {
+        id: application.id,
+        status: application.status,
+        score: application.score != null ? Number(application.score) : null,
+        updated_at: application.updated_at,
+      };
+    }
+
+    const updated = await applicationsModel.updateApplicationStatusById(
+      client,
+      applicationId,
+      status,
+    );
+
+    await client.query('COMMIT');
+
+    return {
+      id: updated.id,
+      status: updated.status,
+      score: updated.score != null ? Number(updated.score) : null,
+      updated_at: updated.updated_at,
+    };
+  } catch (err) {
+    await client.query('ROLLBACK');
+    if (err instanceof HttpError) throw err;
+    logger.error('Error updating application status', { error: err });
+    throw new HttpError(
+      500,
+      'Failed to update application status',
+      'UPDATE_FAILED',
+    );
+  } finally {
+    client.release();
+  }
+}

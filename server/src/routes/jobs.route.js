@@ -18,13 +18,20 @@ import {
   getJob,
   updateJob,
   deleteJob,
+  getJobCandidates,
+  getJobCandidateDetail,
+  downloadCandidateCv,
 } from '../controllers/jobs.controller.js';
-import { applyValidation } from '../validators/applications.validator.js';
+import {
+  applyValidation,
+  candidatesValidation,
+  candidateDetailValidation,
+} from '../validators/applications.validator.js';
 import { applyToJob } from '../controllers/applications.controller.js';
 
 const router = express.Router();
 
-// Job routes
+// Create job route
 router.post(
   '/',
   authMiddleware,
@@ -34,10 +41,13 @@ router.post(
   createJob,
 );
 
+// List jobs (open to all, but show different info based on auth)
 router.get('/', optionalAuthMiddleware, listJobsValidation, validate, listJobs);
 
+// Get job details (open to all, but show different info based on auth)
 router.get('/:id', optionalAuthMiddleware, getJobValidation, validate, getJob);
 
+// Update job route
 router.put(
   '/:id',
   authMiddleware,
@@ -47,6 +57,7 @@ router.put(
   updateJob,
 );
 
+// delete job route
 router.delete(
   '/:id',
   authMiddleware,
@@ -56,14 +67,44 @@ router.delete(
   deleteJob,
 );
 
-// Applications route
+// Apply to job route
 router.post(
   '/:jobId/apply',
   authMiddleware,
-  requireRole(['jobseeker']),
+  requireRole('jobseeker'),
   applyValidation,
   validate,
   applyToJob,
+);
+
+// Candidates listing for a specific job
+router.get(
+  '/:jobId/candidates',
+  authMiddleware,
+  requireRole(['admin', 'hr']),
+  candidatesValidation,
+  validate,
+  getJobCandidates,
+);
+
+// Candidate detail for a specific job
+router.get(
+  '/:jobId/candidates/:userId',
+  authMiddleware,
+  requireRole(['admin', 'hr']),
+  candidateDetailValidation,
+  validate,
+  getJobCandidateDetail,
+);
+
+// Download candidate CV for a specific job and user
+router.get(
+  '/:jobId/candidates/:userId/cv/download',
+  authMiddleware,
+  requireRole(['admin', 'hr']),
+  candidateDetailValidation,
+  validate,
+  downloadCandidateCv,
 );
 
 export default router;

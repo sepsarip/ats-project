@@ -45,3 +45,27 @@ export const getMyApplications = asyncHandler(async (req, res) => {
     data: { applications, meta },
   });
 });
+
+export const updateApplicationStatus = asyncHandler(async (req, res) => {
+  const applicationId = req.params.applicationId;
+  const status = req.body && req.body.status;
+
+  logger.info('Update application status request received', {
+    applicationId,
+    status,
+    updatedBy: req.user?.id,
+  });
+
+  const application = await applicationsService.updateApplicationStatus(
+    applicationId,
+    status,
+  );
+
+  logger.info('Application status updated', { applicationId, status });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Application status updated successfully',
+    data: { application },
+  });
+});
