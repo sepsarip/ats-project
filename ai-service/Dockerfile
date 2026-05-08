@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 5001
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5001", "main:app"]
+CMD ["gunicorn", "--capture-output", "--log-level", "info", "--bind", "0.0.0.0:5001", "main:app"]
