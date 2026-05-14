@@ -1,0 +1,117 @@
+{
+  "javascript": ["js", "javascript", "vanilla js", "ecmascript"],
+  "typescript": ["ts", "typescript"],
+  "node": ["node.js", "nodejs", "node"],
+  "react": ["reactjs", "react.js", "react"],
+  "nextjs": ["nextjs", "next.js"],
+  "vue": ["vue", "vuejs", "vue.js"],
+  "angular": ["angular", "angularjs"],
+  "frontend": ["front-end", "front end", "ui", "client side", "client-side"],
+  "backend": ["back-end", "back end", "server", "server side", "server-side"],
+  "fullstack": ["fullstack", "full stack", "full-stack"],
+  "mobile developer": ["android developer", "ios developer", "mobile engineer"],
+  "devops": ["devops", "site reliability engineer", "sre", "platform engineer"],
+  "qa": ["quality assurance", "software tester", "qa engineer", "testing"],
+  "ui/ux": [
+    "ui ux",
+    "ux designer",
+    "product designer",
+    "user interface",
+    "user experience"
+  ],
+
+  "html": ["html5", "hypertext markup language"],
+  "css": ["css3", "cascading style sheets"],
+  "sass": ["scss", "sass"],
+  "tailwind": ["tailwindcss", "tailwind"],
+  "bootstrap": ["bootstrap", "bootstrap css"],
+
+  "java": ["java", "jdk", "jvm"],
+  "python": ["python", "py"],
+  "php": ["php"],
+  "golang": ["golang", "go language", "go"],
+  "c#": ["csharp", "c#", ".net"],
+  "c++": ["cpp", "c++"],
+  "ruby": ["ruby", "ruby on rails", "rails"],
+
+  "express": ["expressjs", "express.js", "express"],
+  "nestjs": ["nestjs", "nest.js"],
+  "spring boot": ["springboot", "spring boot"],
+  "laravel": ["laravel", "laravel framework"],
+  "django": ["django", "django framework"],
+  "flask": ["flask", "python flask"],
+
+  "sql": ["sql", "postgresql", "mysql", "mariadb", "sqlite"],
+  "postgresql": ["postgres", "postgresql", "psql"],
+  "mysql": ["mysql"],
+  "mongodb": ["mongo", "mongodb", "nosql"],
+  "redis": ["redis", "in-memory database"],
+  "elasticsearch": ["elastic", "elasticsearch", "elk"],
+
+  "api": ["rest api", "graphql", "web service", "backend api"],
+  "rest": ["restful", "rest api"],
+  "graphql": ["graphql", "apollo"],
+  "microservices": ["microservice", "distributed system"],
+  "event driven": ["event-driven", "message queue", "pub sub"],
+
+  "aws": ["amazon web services", "aws"],
+  "gcp": ["google cloud", "gcp"],
+  "azure": ["microsoft azure", "azure"],
+  "cloud": ["cloud computing", "cloud platform"],
+
+  "docker": ["docker", "containerization", "containers"],
+  "kubernetes": ["kubernetes", "k8s", "container orchestration"],
+  "nginx": ["nginx", "web server", "reverse proxy"],
+  "apache": ["apache", "apache http server"],
+  "linux": ["ubuntu", "debian", "centos", "linux server"],
+
+  "ci/cd": [
+    "ci cd",
+    "continuous integration",
+    "continuous delivery",
+    "continuous deployment"
+  ],
+  "jenkins": ["jenkins", "automation server"],
+  "github actions": ["github actions", "gha"],
+  "gitlab ci": ["gitlab ci", "gitlab pipeline"],
+
+  "git": ["git", "version control", "source control"],
+  "github": ["github", "git repository"],
+  "gitlab": ["gitlab"],
+  "bitbucket": ["bitbucket"],
+
+  "testing": [
+    "unit test",
+    "integration test",
+    "automation testing",
+    "e2e testing"
+  ],
+  "jest": ["jest", "jestjs"],
+  "cypress": ["cypress", "cypress io"],
+  "playwright": ["playwright", "browser automation"],
+
+  "security": ["cyber security", "application security", "infosec"],
+  "authentication": ["auth", "authentication", "authorization", "oauth", "jwt"],
+  "encryption": ["cryptography", "data encryption"],
+
+  "machine learning": ["ml", "machine learning", "ai model"],
+  "artificial intelligence": ["ai", "artificial intelligence"],
+  "data science": ["data analyst", "data scientist", "big data"],
+  "data engineering": ["etl", "data pipeline", "data engineer"],
+
+  "agile": ["scrum", "kanban", "agile methodology"],
+  "scrum master": ["scrum master", "agile coach"],
+  "product manager": ["pm", "product owner", "product manager"],
+
+  "erp": ["enterprise resource planning"],
+  "crm": ["customer relationship management"],
+  "iot": ["internet of things", "embedded system"],
+  "blockchain": ["web3", "smart contract", "crypto technology"],
+
+  "vpn": ["virtual private network", "vpn"],
+  "cdn": ["content delivery network", "cdn service"],
+  "dns": ["domain name system", "dns server"],
+
+  "serverless": ["lambda", "faas", "function as a service"],
+  "virtualization": ["vmware", "virtual machine", "hypervisor"]
+}

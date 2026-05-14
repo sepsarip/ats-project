@@ -4,6 +4,8 @@ import logger from '../config/logger.js';
 import * as jobsModel from '../models/jobs.model.js';
 import * as profilesModel from '../models/profiles.model.js';
 import * as applicationsModel from '../models/applications.model.js';
+import * as cvFilesModel from '../models/cvFiles.model.js';
+import * as aiService from './ai.service.js';
 
 export async function applyToJob(userId, jobId) {
   const client = await pool.connect();
@@ -82,6 +84,88 @@ export async function applyToJob(userId, jobId) {
       userId,
       jobId,
     });
+
+    // Background task to score the application using AI service
+    (async () => {
+      try {
+        const bgClient = await pool.connect();
+        try {
+          const cvRow = await cvFilesModel.getByUserId(bgClient, userId);
+          if (!cvRow || !cvRow.extracted_text) {
+            logger.info('No extracted CV text available, skipping scoring', {
+              userId,
+              applicationId: application.id,
+            });
+            return;
+          }
+
+          const jobRow = await jobsModel.getJobById(jobId);
+          if (!jobRow) {
+            logger.warn('Job not found during background scoring, skipping', {
+              jobId,
+              applicationId: application.id,
+            });
+            return;
+          }
+
+          // normalize job fields
+          let requirements = jobRow.requirements;
+          let descriptions = jobRow.descriptions;
+          try {
+            if (typeof requirements === 'string')
+              requirements = JSON.parse(requirements || '[]');
+          } catch (e) {
+            requirements = [];
+          }
+          try {
+            if (typeof descriptions === 'string')
+              descriptions = JSON.parse(descriptions || '[]');
+          } catch (e) {
+            descriptions = [];
+          }
+
+          const payload = {
+            application_id: application.id,
+            extracted_text_cv: cvRow.extracted_text,
+            job_info: {
+              title: jobRow.title,
+              requirements: requirements || [],
+              descriptions: descriptions || [],
+            },
+          };
+
+          const resp = await aiService.scoreCv(payload);
+          if (resp && typeof resp.score === 'number') {
+            try {
+              await applicationsModel.updateApplicationScoreById(
+                bgClient,
+                application.id,
+                resp.score,
+              );
+              logger.info('Application score updated', {
+                applicationId: application.id,
+                score: resp.score,
+              });
+            } catch (err) {
+              logger.warn('Failed to update application score', {
+                applicationId: application.id,
+                error: err && err.message,
+              });
+            }
+          } else {
+            logger.info('AI scoring did not return score', {
+              applicationId: application.id,
+            });
+          }
+        } finally {
+          bgClient.release();
+        }
+      } catch (err) {
+        logger.error('Background scoring task failed', {
+          error: err && err.message,
+        });
+      }
+    })();
     return result;
   } catch (err) {
     await client.query('ROLLBACK');
