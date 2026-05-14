@@ -234,3 +234,15 @@ export async function updateApplicationStatusById(
   const { rows } = await client.query(q, values);
   return rows[0] || null;
 }
+
+export async function updateApplicationScoreById(client, applicationId, score) {
+  const q = `
+    UPDATE applications
+    SET score = $1, updated_at = current_timestamp
+    WHERE id = $2
+    RETURNING id, status, score, updated_at
+  `;
+  const values = [score, applicationId];
+  const { rows } = await client.query(q, values);
+  return rows[0] || null;
+}

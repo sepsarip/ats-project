@@ -7,6 +7,7 @@ configure_logging()
 from flask import Flask
 from app.routes.health import health_bp
 from app.routes.extract import extract_bp
+from app.routes.score import score_bp
 from app.config import config
 
 def create_app() -> Flask:
@@ -14,6 +15,7 @@ def create_app() -> Flask:
     app.config.from_object(config)
     app.register_blueprint(health_bp)
     app.register_blueprint(extract_bp)
+    app.register_blueprint(score_bp)
     return app
 
 app = create_app()

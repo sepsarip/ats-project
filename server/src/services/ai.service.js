@@ -99,3 +99,67 @@ export async function extractCv(filePath) {
     return null;
   }
 }
+
+// Post scoring payload to AI service
+export async function scoreCv(payload) {
+  if (!env.aiServiceUrl) {
+    throw new Error('AI service URL not configured');
+  }
+
+  try {
+    const url = `${env.aiServiceUrl.replace(/\/$/, '')}/score-cv-job`;
+    const response = await axios.post(url, payload, {
+      headers: { 'Content-Type': 'application/json' },
+      timeout: Number(env.aiServiceTimeoutMs) || 15000,
+    });
+
+    logger.info('AI scoring response received', {
+      status: response.status,
+      statusText: response.statusText,
+    });
+
+    if (response.data?.status === 'success' && response.data.data) {
+      return response.data.data;
+    }
+
+    if (response.data?.status === 'accepted' && response.data.data) {
+      // queued
+      return response.data.data;
+    }
+
+    if (response.data?.status === 'error') {
+      logger.warn('AI scoring returned error', {
+        message: response.data.message,
+        code: response.data.code,
+      });
+      return null;
+    }
+
+    logger.warn('AI scoring returned unexpected format', {
+      data: response.data,
+    });
+    return null;
+  } catch (err) {
+    if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+      logger.warn('AI scoring request timeout', {
+        timeoutMs: env.aiServiceTimeoutMs,
+      });
+      return null;
+    }
+
+    if (err.code === 'ECONNREFUSED') {
+      logger.error('AI service not reachable for scoring', {
+        url: env.aiServiceUrl,
+        error: err.message,
+      });
+      return null;
+    }
+
+    logger.warn('AI scoring request failed', {
+      message: err.message,
+      code: err.code,
+      response: err.response?.data,
+    });
+    return null;
+  }
+}
