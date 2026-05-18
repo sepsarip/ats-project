@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function JobCard({ job }) {
   const {
@@ -43,9 +44,12 @@ export default function JobCard({ job }) {
       )}
 
       <div className="mt-auto pt-4 flex justify-center">
-        <button className="bg-primary hover:bg-primary-hover text-white px-3 py-1 rounded-md text-sm">
+        <Link
+          to={`/jobs/${job?.id}`}
+          className="bg-primary hover:bg-primary-hover text-white px-3 py-1 rounded-md text-sm"
+        >
           Lihat Detail
-        </button>
+        </Link>
       </div>
     </article>
   );

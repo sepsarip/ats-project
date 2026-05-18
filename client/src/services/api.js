@@ -5,6 +5,7 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+// Fetch list of jobs with optional filters
 export async function fetchJobs(params = {}) {
   const cleaned = Object.fromEntries(
     Object.entries(params).filter(
@@ -15,6 +16,13 @@ export async function fetchJobs(params = {}) {
   const res = await api.get('/api/jobs', { params: cleaned });
   // return data.jobs and meta only
   return res.data?.data || { jobs: [], meta: {} };
+}
+
+// Fetch single job detail by ID
+export async function fetchJobDetail(id) {
+  if (!id) return null;
+  const res = await api.get(`/api/jobs/${id}`);
+  return res.data?.data?.job || null;
 }
 
 // Auth helpers: keep concerns separated and reusable
