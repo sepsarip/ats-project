@@ -4,6 +4,7 @@ import { fetchJobDetail } from '../services/api';
 import { formatSalaryRange } from '../utils/formatters';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import ApplyConfirmModal from '../components/ApplyConfirmModal';
 
 function Section({ title, items }) {
   if (!items || items.length === 0) return null;
@@ -27,6 +28,7 @@ export default function JobDetailPage() {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [applyOpen, setApplyOpen] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -61,9 +63,9 @@ export default function JobDetailPage() {
   }, [id]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="p-6">
+      <main className="p-6 flex-1">
         <div className="mx-auto max-w-4xl">
           <div className="mb-4">
             <button
@@ -117,6 +119,7 @@ export default function JobDetailPage() {
                     <button
                       type="button"
                       disabled={job.status !== 'open'}
+                      onClick={() => setApplyOpen(true)}
                       className={
                         job.status === 'open'
                           ? 'px-3 py-1 rounded-md text-sm bg-primary hover:bg-primary-hover text-white'
@@ -154,6 +157,13 @@ export default function JobDetailPage() {
         </div>
       </main>
       <Footer />
+
+      <ApplyConfirmModal
+        open={applyOpen}
+        job={job}
+        jobId={id}
+        onClose={() => setApplyOpen(false)}
+      />
     </div>
   );
 }

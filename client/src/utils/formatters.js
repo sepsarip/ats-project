@@ -21,4 +21,13 @@ export function formatSalaryRange(min, max) {
   return `${minStr} - ${maxStr}`;
 }
 
-export default { formatRupiah, formatSalaryRange };
+export function formatFileSize(bytes) {
+  if (bytes === undefined || bytes === null || bytes === '') return '';
+  const n = Number(bytes);
+  if (!Number.isFinite(n)) return '';
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+export default { formatRupiah, formatSalaryRange, formatFileSize };
