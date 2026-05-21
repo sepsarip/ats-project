@@ -5,24 +5,25 @@ import { setAuthHeader } from '../services/api';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
+  const initial = (() => {
     try {
       const raw = localStorage.getItem('auth');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed?.token) {
-          setToken(parsed.token);
-          setAuthHeader(parsed.token);
-        }
-        if (parsed?.user) setUser(parsed.user);
-      }
+      if (!raw) return { user: null, token: null };
+      const parsed = JSON.parse(raw);
+      if (parsed?.token) setAuthHeader(parsed.token);
+      return { user: parsed.user || null, token: parsed.token || null };
     } catch (e) {
-      // ignore parse errors
+      return { user: null, token: null };
     }
+  })();
+
+  const [user, setUser] = useState(initial.user);
+  const [token, setToken] = useState(initial.token);
+  const [loading, setLoading] = useState(false);
+  const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+    setInitialized(true);
   }, []);
 
   async function login(email, password) {
@@ -48,7 +49,9 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, token, loading, initialized, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

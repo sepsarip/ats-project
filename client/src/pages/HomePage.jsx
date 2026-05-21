@@ -12,6 +12,7 @@ export default function HomePage() {
     location: '',
     employment_type: '',
   });
+  const [appliedFilters, setAppliedFilters] = useState(filters);
   const [page, setPage] = useState(1);
   const [limit] = useState(9);
   const [jobs, setJobs] = useState([]);
@@ -43,13 +44,13 @@ export default function HomePage() {
 
   function handleSearch() {
     setPage(1);
-    load({ page: 1 });
+    setFilters(appliedFilters);
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="p-6">
+      <main className="p-6 flex-1">
         <div className="mx-auto max-w-6xl">
           <section className="mb-6 p-6 bg-white rounded shadow-sm border border-zinc-200">
             <h1 className="text-2xl font-bold text-text-primary">
@@ -64,8 +65,8 @@ export default function HomePage() {
 
             <div className="mt-4">
               <Filters
-                filters={filters}
-                onChange={setFilters}
+                filters={appliedFilters}
+                onChange={setAppliedFilters}
                 onSearch={handleSearch}
               />
             </div>
@@ -96,7 +97,6 @@ export default function HomePage() {
                 <JobCard key={j.id} job={j} />
               ))}
             </div>
-
             <Pagination meta={meta} onPageChange={(p) => setPage(p)} />
           </section>
         </div>
