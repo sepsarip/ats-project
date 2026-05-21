@@ -12,6 +12,7 @@ export default function HomePage() {
     location: '',
     employment_type: '',
   });
+  const [appliedFilters, setAppliedFilters] = useState(filters);
   const [page, setPage] = useState(1);
   const [limit] = useState(9);
   const [jobs, setJobs] = useState([]);
@@ -43,7 +44,7 @@ export default function HomePage() {
 
   function handleSearch() {
     setPage(1);
-    load({ page: 1 });
+    setFilters(appliedFilters);
   }
 
   return (
@@ -64,8 +65,8 @@ export default function HomePage() {
 
             <div className="mt-4">
               <Filters
-                filters={filters}
-                onChange={setFilters}
+                filters={appliedFilters}
+                onChange={setAppliedFilters}
                 onSearch={handleSearch}
               />
             </div>
