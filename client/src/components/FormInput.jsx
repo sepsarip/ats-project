@@ -9,6 +9,8 @@ export default function FormInput({
   required = false,
   placeholder = '',
   showToggle = false,
+  error,
+  inputClassName = '',
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === 'password';
@@ -30,7 +32,11 @@ export default function FormInput({
           onChange={onChange}
           required={required}
           placeholder={placeholder}
-          className="w-full px-3 py-2 border border-border rounded bg-white text-text-primary"
+          className={`w-full px-3 py-2 border rounded bg-white text-text-primary ${
+            error ? 'border-error/60' : 'border-border'
+          } ${inputClassName}`}
+          aria-invalid={error ? 'true' : 'false'}
+          aria-describedby={error ? `${name}-error` : undefined}
         />
 
         {isPassword && showToggle && (
@@ -44,6 +50,11 @@ export default function FormInput({
           </button>
         )}
       </div>
+      {error && (
+        <div id={`${name}-error`} className="mt-1 text-sm text-error">
+          {error}
+        </div>
+      )}
     </div>
   );
 }

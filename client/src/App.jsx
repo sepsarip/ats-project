@@ -6,6 +6,7 @@ import JobDetailPage from './pages/JobDetailPage';
 import AccountSettingsPage from './pages/AccountSettingsPage';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './context/AuthContext';
+import DashboardRoutes from './pages/dashboard';
 
 function App() {
   return (
@@ -22,6 +23,14 @@ function App() {
             element={
               <PrivateRoute requiredRole="jobseeker">
                 <AccountSettingsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard/*"
+            element={
+              <PrivateRoute requiredRole={['admin', 'hr']}>
+                <DashboardRoutes />
               </PrivateRoute>
             }
           />

@@ -64,6 +64,15 @@ export default function Header() {
                     {user.fullName || user.email}
                   </div>
                   <div className="flex flex-col">
+                    {(user.role === 'admin' || user.role === 'hr') && (
+                      <Link
+                        to="/dashboard"
+                        className="px-3 py-2 text-text-primary hover:bg-background"
+                        onClick={() => setOpen(false)}
+                      >
+                        Dashboard
+                      </Link>
+                    )}
                     {user.role === 'jobseeker' && (
                       <Link
                         to="/account/settings"

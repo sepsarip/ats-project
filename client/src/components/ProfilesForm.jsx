@@ -118,7 +118,7 @@ export default function ProfilesForm() {
         name="phone"
         value={form.phone}
         onChange={onChange}
-        placeholder="+628xxxxxxxxx"
+        placeholder="628xxxxxxxxx"
         required
       />
 

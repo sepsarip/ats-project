@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { cleanParams } from './utils';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -7,13 +8,7 @@ const api = axios.create({
 
 // Fetch list of jobs with optional filters
 export async function fetchJobs(params = {}) {
-  const cleaned = Object.fromEntries(
-    Object.entries(params).filter(
-      ([, v]) => v !== undefined && v !== null && v !== '',
-    ),
-  );
-
-  const res = await api.get('/api/jobs', { params: cleaned });
+  const res = await api.get('/api/jobs', { params: cleanParams(params) });
   // return data.jobs and meta only
   return res.data?.data || { jobs: [], meta: {} };
 }
