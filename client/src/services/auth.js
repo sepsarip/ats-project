@@ -26,4 +26,18 @@ export function extractAuthFromResponse(data) {
   };
 }
 
-export default { login, extractAuthFromResponse, register };
+// Change user password
+export async function changePassword(
+  oldPassword,
+  newPassword,
+  confirmPassword,
+) {
+  const res = await api.post('/api/auth/change-password', {
+    oldPassword,
+    newPassword,
+    confirmPassword,
+  });
+  return res.data;
+}
+
+export default { login, extractAuthFromResponse, register, changePassword };

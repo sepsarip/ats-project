@@ -83,6 +83,13 @@ export default function Header() {
                       </Link>
                     )}
                     <Link
+                      to="/change-password"
+                      className="px-3 py-2 text-text-primary hover:bg-background"
+                      onClick={() => setOpen(false)}
+                    >
+                      Change Password
+                    </Link>
+                    <Link
                       to="/"
                       onClick={() => {
                         setOpen(false);

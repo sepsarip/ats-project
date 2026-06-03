@@ -1,13 +1,20 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function DashboardSidebar({ onClose }) {
   const loc = useLocation();
+  const { user } = useAuth() || {};
+  const isAdmin = user?.role === 'admin';
   const items = [
     { to: '/dashboard', label: 'Beranda' },
     { to: '/dashboard/jobs', label: 'Job Management' },
     { to: '/dashboard/candidates', label: 'Candidate Management' },
   ];
+
+  if (isAdmin) {
+    items.push({ to: '/dashboard/hr/create', label: 'Create HR Account' });
+  }
 
   return (
     <aside className="w-64 bg-sidebar p-4 rounded border border-border">

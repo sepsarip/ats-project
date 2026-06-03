@@ -110,10 +110,11 @@ export default function CandidateDetailPage() {
               {application?.status || '-'}
             </div>
             <div>
-              <span className="text-text-secondary">Score:</span>{' '}
+              <span className="text-text-secondary">Score CV:</span>{' '}
               {application?.score === null || application?.score === undefined
                 ? '-'
-                : application.score}
+                : application.score}{' '}
+              {'/ 100.00'}
             </div>
             <div>
               <span className="text-text-secondary">Applied at:</span>{' '}

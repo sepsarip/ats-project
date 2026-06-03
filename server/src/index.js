@@ -10,6 +10,7 @@ import adminUsersRoutes from './routes/admin.users.route.js';
 import jobsRoutes from './routes/jobs.route.js';
 import profilesRoutes from './routes/profiles.route.js';
 import applicationsRoutes from './routes/applications.route.js';
+import dashboardRoutes from './routes/dashboard.route.js';
 import {
   errorHandler,
   notFoundHandler,
@@ -28,6 +29,7 @@ app.use('/api/admin/users', adminUsersRoutes);
 app.use('/api/jobs', jobsRoutes);
 app.use('/api/profiles', profilesRoutes);
 app.use('/api/applications', applicationsRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

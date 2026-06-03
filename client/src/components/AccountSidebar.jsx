@@ -8,7 +8,7 @@ export default function AccountSidebar({
   const items = [
     { key: 'profiles', label: 'Profiles' },
     { key: 'history', label: 'History Applications' },
-    { key: 'cv', label: 'CV' },
+    { key: 'cv', label: 'CV Management' },
   ];
 
   return (
