@@ -8,6 +8,7 @@ import { updateApplicationStatus } from '../../../services/applications';
 import { APPLICATION_STATUSES } from '../../../constants/applicationStatuses';
 import { formatLongDate, formatShortDate } from '../../../utils/formatters';
 import { triggerDownload } from '../../../utils/download';
+import { FiCheck, FiDownload, FiLoader } from 'react-icons/fi';
 
 export default function CandidateDetailPage() {
   const { jobId, userId } = useParams();
@@ -125,24 +126,32 @@ export default function CandidateDetailPage() {
           </div>
 
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <select
-              value={statusDraft}
-              onChange={(e) => setStatusDraft(e.target.value)}
-              className="px-3 py-2 border border-border rounded bg-surface text-text-primary cursor-pointer"
-            >
-              {APPLICATION_STATUSES.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={handleUpdateStatus}
-              disabled={updating}
-              className="px-3 py-2 bg-warning text-white rounded disabled:opacity-50"
-            >
-              {updating ? 'Updating…' : 'Update Status'}
-            </button>
+            <div className="inline-flex items-center gap-1 bg-sidebar rounded p-0.5 border border-border">
+              <select
+                value={statusDraft}
+                onChange={(e) => setStatusDraft(e.target.value)}
+                className="bg-transparent text-sm text-text-primary focus:outline-none cursor-pointer px-1 py-0.5"
+              >
+                {APPLICATION_STATUSES.map((s) => (
+                  <option key={s.value} value={s.value} className="bg-surface text-text-primary">
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+
+              <button
+                onClick={handleUpdateStatus}
+                disabled={updating || statusDraft === application?.status}
+                title="Update Status"
+                className="inline-flex items-center justify-center w-7 h-7 rounded bg-warning text-white hover:bg-amber-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                {updating ? (
+                  <FiLoader className="w-4 h-4 animate-spin" />
+                ) : (
+                  <FiCheck className="w-4 h-4" />
+                )}
+              </button>
+            </div>
           </div>
         </section>
 
@@ -226,9 +235,18 @@ export default function CandidateDetailPage() {
             <button
               onClick={handleDownloadCv}
               disabled={downloading}
-              className="px-3 py-2 border border-border rounded disabled:opacity-50"
+              title={downloading ? "Downloading CV..." : "Download CV"}
+              className="inline-flex items-center gap-2 px-3 py-2 border border-border rounded hover:bg-sidebar text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50"
             >
-              {downloading ? 'Downloading…' : 'Download CV'}
+              {downloading ? (
+                <>
+                  <FiLoader className="w-4 h-4 animate-spin text-primary" />
+                </>
+              ) : (
+                <>
+                  <FiDownload className="w-4 h-4" />
+                </>
+              )}
             </button>
           </div>
         </section>

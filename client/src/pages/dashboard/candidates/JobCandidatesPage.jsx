@@ -10,6 +10,7 @@ import { updateApplicationStatus } from '../../../services/applications';
 import { APPLICATION_STATUSES } from '../../../constants/applicationStatuses';
 import { formatShortDate } from '../../../utils/formatters';
 import { triggerDownload } from '../../../utils/download';
+import { FiEye, FiDownload, FiCheck, FiLoader } from 'react-icons/fi';
 
 export default function JobCandidatesPage() {
   const { jobId } = useParams();
@@ -135,7 +136,7 @@ export default function JobCandidatesPage() {
   }
 
   return (
-    <div className="p-4 bg-surface rounded border border-border">
+    <div className="p-6 bg-surface rounded border border-border w-full max-w-full overflow-hidden">
       <div className="flex items-start justify-between gap-3 mb-4">
         <div>
           <h2 className="text-lg font-semibold">Candidates</h2>
@@ -166,85 +167,117 @@ export default function JobCandidatesPage() {
       ) : error ? (
         <p className="text-error">{error}</p>
       ) : candidates.length === 0 ? (
-        <p>No candidates found.</p>
-      ) : (
-        <>
-          <table className="w-full table-auto">
+        <div className="w-full overflow-x-auto">
+          <table className="w-full min-w-[800px] table-auto border-collapse">
             <thead>
-              <tr className="text-justify-start bg-sidebar">
-                <th className="px-2 py-1">No</th>
-                <th className="px-2 py-1">Name</th>
-                <th className="px-2 py-1">Status</th>
-                <th className="px-2 py-1">Score CV</th>
-                <th className="px-2 py-1">Applied At</th>
-                <th className="px-2 py-1">Actions</th>
+              <tr className="text-left bg-sidebar">
+                <th className="px-2 py-2 w-12 text-center text-sm font-semibold">No</th>
+                <th className="px-2 py-2 w-[22%] text-sm font-semibold">Name</th>
+                <th className="px-2 py-2 w-[15%] text-sm font-semibold">Status</th>
+                <th className="px-2 py-2 w-[13%] text-sm font-semibold">Score CV</th>
+                <th className="px-2 py-2 w-[15%] text-sm font-semibold">Applied At</th>
+                <th className="px-2 py-2 w-[30%] text-sm font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredCandidates.map((c, index) => (
-                <tr key={c.application_id} className="border-t">
-                  <td className="px-2 py-2">{offset + index + 1}</td>
-                  <td className="px-2 py-2">{c.user?.full_name || '-'}</td>
-                  <td className="px-2 py-2">{c.status || '-'}</td>
-                  <td className="px-2 py-2">
-                    {c.score === null || c.score === undefined ? '-' : c.score}
-                  </td>
-                  <td className="px-2 py-2">
-                    {c.applied_at ? formatShortDate(c.applied_at) : '-'}
-                  </td>
-                  <td className="px-2 py-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Link
-                        to={`users/${c.user?.id}`}
-                        className="px-2 py-1 bg-primary text-white rounded"
-                      >
-                        Detail
-                      </Link>
-
-                      <button
-                        onClick={() => handleDownloadCv(c.user?.id)}
-                        disabled={
-                          !c.user?.id || downloadingUserId === c.user?.id
-                        }
-                        className="px-2 py-1 border border-border hover:bg-sidebar disabled:opacity-50"
-                      >
-                        {downloadingUserId === c.user?.id
-                          ? 'Downloading…'
-                          : 'Download CV'}
-                      </button>
-
-                      <select
-                        value={statusDrafts[c.application_id] || ''}
-                        onChange={(e) =>
-                          setStatusDrafts((prev) => ({
-                            ...prev,
-                            [c.application_id]: e.target.value,
-                          }))
-                        }
-                        className="px-2 py-1 border border-border hover:bg-sidebar rounded bg-surface text-text-primary cursor-pointer"
-                      >
-                        {APPLICATION_STATUSES.map((s) => (
-                          <option key={s.value} value={s.value}>
-                            {s.label}
-                          </option>
-                        ))}
-                      </select>
-
-                      <button
-                        onClick={() => handleUpdateStatus(c.application_id)}
-                        disabled={updatingApplicationId === c.application_id}
-                        className="px-2 py-1 bg-warning text-white rounded disabled:opacity-50"
-                      >
-                        {updatingApplicationId === c.application_id
-                          ? 'Updating…'
-                          : 'Update'}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              <tr>
+                <td colSpan={6} className="px-2 py-2 text-sm text-center">No candidates found.</td>
+              </tr>
             </tbody>
           </table>
+        </div>
+      ) : (
+        <>
+          <div className="w-full overflow-x-auto">
+            <table className="w-full min-w-[800px] table-auto border-collapse">
+              <thead>
+                <tr className="text-left bg-sidebar">
+                  <th className="px-2 py-2 w-12 text-center text-sm font-semibold">No</th>
+                  <th className="px-2 py-2 w-[22%] text-sm font-semibold">Name</th>
+                  <th className="px-2 py-2 w-[15%] text-sm font-semibold">Status</th>
+                  <th className="px-2 py-2 w-[13%] text-sm font-semibold">Score CV</th>
+                  <th className="px-2 py-2 w-[15%] text-sm font-semibold">Applied At</th>
+                  <th className="px-2 py-2 w-[30%] text-sm font-semibold">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredCandidates.map((c, index) => (
+                  <tr key={c.application_id} className="border-t">
+                    <td className="px-2 py-2 text-center text-sm">{offset + index + 1}</td>
+                    <td className="px-2 py-2 text-sm">{c.user?.full_name || '-'}</td>
+                    <td className="px-2 py-2 text-sm">{c.status || '-'}</td>
+                    <td className="px-2 py-2 text-sm">
+                      {c.score === null || c.score === undefined ? '-' : c.score}
+                    </td>
+                    <td className="px-2 py-2 text-sm">
+                      {c.applied_at ? formatShortDate(c.applied_at) : '-'}
+                    </td>
+                    <td className="px-2 py-2 text-sm">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Link
+                          to={`users/${c.user?.id}`}
+                          title="Detail"
+                          className="inline-flex items-center justify-center w-8 h-8 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                        >
+                          <FiEye className="w-4 h-4" />
+                        </Link>
+
+                        <button
+                          onClick={() => handleDownloadCv(c.user?.id)}
+                          disabled={
+                            !c.user?.id || downloadingUserId === c.user?.id
+                          }
+                          title={downloadingUserId === c.user?.id ? 'Downloading CV...' : 'Download CV'}
+                          className="inline-flex items-center justify-center w-8 h-8 rounded border border-border hover:bg-sidebar text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50"
+                        >
+                          {downloadingUserId === c.user?.id ? (
+                            <FiLoader className="w-4 h-4 animate-spin text-primary" />
+                          ) : (
+                            <FiDownload className="w-4 h-4" />
+                          )}
+                        </button>
+
+                        <div className="inline-flex items-center gap-1 bg-sidebar rounded p-0.5 border border-border">
+                          <select
+                            value={statusDrafts[c.application_id] || ''}
+                            onChange={(e) =>
+                              setStatusDrafts((prev) => ({
+                                ...prev,
+                                [c.application_id]: e.target.value,
+                              }))
+                            }
+                            className="bg-transparent text-sm text-text-primary focus:outline-none cursor-pointer px-1 py-0.5"
+                          >
+                            {APPLICATION_STATUSES.map((s) => (
+                              <option key={s.value} value={s.value} className="bg-surface text-text-primary">
+                                {s.label}
+                              </option>
+                            ))}
+                          </select>
+
+                          <button
+                            onClick={() => handleUpdateStatus(c.application_id)}
+                            disabled={
+                              updatingApplicationId === c.application_id ||
+                              statusDrafts[c.application_id] === c.status
+                            }
+                            title="Update Status"
+                            className="inline-flex items-center justify-center w-7 h-7 rounded bg-warning text-white hover:bg-amber-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                          >
+                            {updatingApplicationId === c.application_id ? (
+                              <FiLoader className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <FiCheck className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           <div className="mt-4">
             <Pagination meta={meta} onPageChange={(p) => setPage(p)} />

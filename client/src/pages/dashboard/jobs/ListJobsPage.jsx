@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { formatRupiah } from '../../../utils/formatters';
 import Filters from '../../../components/Filters';
 import Pagination from '../../../components/Pagination';
+import { FiUsers, FiEye, FiEdit, FiTrash2, FiPlus } from 'react-icons/fi';
 
 export default function JobsListPage() {
   const [appliedFilters, setAppliedFilters] = useState({
@@ -78,9 +79,10 @@ export default function JobsListPage() {
         <div>
           <Link
             to="create"
-            className="px-3 py-2 bg-success hover:bg-emerald-700 text-white rounded"
+            className="inline-flex items-center gap-1.5 px-3 py-2 bg-success hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold shadow-sm transition-all duration-200"
           >
-            Create New Job
+            <FiPlus className="w-4 h-4" />
+            <span>Create New Job</span>
           </Link>
         </div>
       </div>
@@ -166,66 +168,76 @@ export default function JobsListPage() {
             ))}
           </div>
 
-          {/* Desktop / tablet: table */}
-          <table className="w-full table-auto hidden sm:table">
-            <thead>
-              <tr className="text-justify-start bg-sidebar">
-                <th className="px-2 py-1">No</th>
-                <th className="px-2 py-1">Job Title</th>
-                <th className="px-2 py-1">Location</th>
-                <th className="px-2 py-1">Employment</th>
-                <th className="px-2 py-1">Status</th>
-                <th className="px-2 py-1">Min Salary</th>
-                <th className="px-2 py-1">Max Salary</th>
-                <th className="px-2 py-1">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {jobs.map((j, index) => (
-                <tr key={j.id} className="border-t">
-                  <td className="px-2 py-2">{offset + index + 1}</td>
-                  <td className="px-2 py-2">{j.title}</td>
-                  <td className="px-2 py-2">{j.location}</td>
-                  <td className="px-2 py-2">{j.employment_type}</td>
-                  <td className="px-2 py-2">{j.status}</td>
-                  <td className="px-2 py-2">
-                    {j.min_salary ? formatRupiah(j.min_salary) : '-'}
-                  </td>
-                  <td className="px-2 py-2">
-                    {j.max_salary ? formatRupiah(j.max_salary) : '-'}
-                  </td>
-                  <td className="px-2 py-2">
-                    <div className="flex gap-2">
-                      <Link
-                        to={`/dashboard/candidates/jobs/${j.id}`}
-                        className="px-2 py-1 bg-zinc-700 text-white rounded"
-                      >
-                        Candidates
-                      </Link>
-                      <Link
-                        to={`${j.id}`}
-                        className="px-2 py-1 bg-primary text-white rounded"
-                      >
-                        Detail
-                      </Link>
-                      <button
-                        onClick={() => navigate(`${j.id}/edit`)}
-                        className="px-2 py-1 bg-warning text-white rounded"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(j.id)}
-                        className="px-2 py-1 bg-error text-white rounded"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
+          <div className="w-full overflow-x-auto hidden sm:block border border-border rounded-lg">
+            <table className="w-full min-w-[900px] table-fixed border-collapse">
+              <thead>
+                <tr className="text-left bg-sidebar">
+                  <th className="px-3 py-3 w-12 text-center text-xs font-semibold text-text-secondary uppercase tracking-wider">No</th>
+                  <th className="px-3 py-3 w-[22%] text-xs font-semibold text-text-secondary uppercase tracking-wider">Job Title</th>
+                  <th className="px-3 py-3 w-[12%] text-xs font-semibold text-text-secondary uppercase tracking-wider">Location</th>
+                  <th className="px-3 py-3 w-[12%] text-xs font-semibold text-text-secondary uppercase tracking-wider">Employment</th>
+                  <th className="px-3 py-3 w-[10%] text-center text-xs font-semibold text-text-secondary uppercase tracking-wider">Status</th>
+                  <th className="px-3 py-3 w-[12%] text-xs font-semibold text-text-secondary uppercase tracking-wider">Min Salary</th>
+                  <th className="px-3 py-3 w-[12%] text-xs font-semibold text-text-secondary uppercase tracking-wider">Max Salary</th>
+                  <th className="px-3 py-3 w-[20%] text-xs font-semibold text-text-secondary uppercase tracking-wider">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {jobs.map((j, index) => (
+                  <tr key={j.id} className="border-t border-border hover:bg-zinc-50/50 transition-colors">
+                    <td className="px-3 py-3 text-center text-sm text-text-secondary">{offset + index + 1}</td>
+                    <td className="px-3 py-3 text-sm font-medium text-text-primary">{j.title}</td>
+                    <td className="px-3 py-3 text-sm text-text-secondary">{j.location}</td>
+                    <td className="px-3 py-3 text-sm text-text-secondary">{j.employment_type}</td>
+                    <td className="px-3 py-3 text-center text-sm">
+                      <span className={`inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full text-white ${j.status === 'open' ? 'bg-success' : j.status === 'draft' ? 'bg-warning' : 'bg-error'
+                        }`}>
+                        {j.status}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3 text-sm text-text-secondary">
+                      {j.min_salary != null ? formatRupiah(j.min_salary) : 'Belum ditentukan'}
+                    </td>
+                    <td className="px-3 py-3 text-sm text-text-secondary">
+                      {j.max_salary != null ? formatRupiah(j.max_salary) : 'Belum ditentukan'}
+                    </td>
+                    <td className="px-3 py-3 text-sm">
+                      <div className="flex items-center gap-2">
+                        <Link
+                          to={`/dashboard/candidates/jobs/${j.id}`}
+                          title="Candidates"
+                          className="inline-flex items-center justify-center w-8 h-8 rounded bg-zinc-100 text-zinc-700 hover:bg-zinc-200 transition-colors"
+                        >
+                          <FiUsers className="w-4 h-4" />
+                        </Link>
+                        <Link
+                          to={`${j.id}`}
+                          title="Detail"
+                          className="inline-flex items-center justify-center w-8 h-8 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                        >
+                          <FiEye className="w-4 h-4" />
+                        </Link>
+                        <button
+                          onClick={() => navigate(`${j.id}/edit`)}
+                          title="Edit"
+                          className="inline-flex items-center justify-center w-8 h-8 rounded bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors"
+                        >
+                          <FiEdit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(j.id)}
+                          title="Delete"
+                          className="inline-flex items-center justify-center w-8 h-8 rounded bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                        >
+                          <FiTrash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           <div className="mt-4">
             <Pagination meta={meta} onPageChange={(p) => setPage(p)} />

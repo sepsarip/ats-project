@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Pagination from './Pagination';
 import { getMyApplications } from '../services/applications';
 import { formatSalaryRange } from '../utils/formatters';
+import { FiBriefcase, FiSearch } from 'react-icons/fi';
 
 function titleCase(s) {
   if (!s) return '';
@@ -41,8 +42,8 @@ export default function ApplicationsHistory({ defaultLimit = 10 }) {
       } catch (err) {
         setError(
           err?.response?.data?.message ||
-            err?.message ||
-            'Failed to load applications',
+          err?.message ||
+          'Failed to load applications',
         );
       } finally {
         setLoading(false);
@@ -59,8 +60,28 @@ export default function ApplicationsHistory({ defaultLimit = 10 }) {
 
   if (error) return <div className="text-error">{error}</div>;
 
-  if (!loading && apps.length === 0)
-    return <div className="text-text-secondary">Belum ada lamaran</div>;
+  if (!loading && apps.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center text-center py-12 px-4">
+        <div className="w-20 h-20 bg-zinc-100 rounded-full flex items-center justify-center text-zinc-400 mb-4 border border-zinc-200 shadow-inner">
+          <FiBriefcase className="w-10 h-10" />
+        </div>
+        <h3 className="text-lg font-semibold text-text-primary mb-2">
+          Belum Ada Lamaran Pekerjaan
+        </h3>
+        <p className="text-text-secondary text-sm max-w-sm mb-6 leading-relaxed">
+          Anda belum melamar ke lowongan kerja mana pun. Jelajahi berbagai peluang karir menarik di platform kami dan kirimkan lamaran pertama Anda hari ini!
+        </p>
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-lg font-medium shadow-md transition-all hover:scale-105 duration-200"
+        >
+          <FiSearch className="w-5 h-5" />
+          <span>Cari Lowongan Kerja</span>
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div>

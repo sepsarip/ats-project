@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { FiGrid, FiKey, FiSettings, FiLogOut } from 'react-icons/fi';
 
 export default function Header() {
   const { user, logout } = useAuth() || {};
@@ -27,7 +28,7 @@ export default function Header() {
     <header className="bg-surface border-b border-border">
       <div className="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
         <Link to="/" className="text-text-primary font-bold text-lg">
-          Logo
+          BanyakJob
         </Link>
 
         <nav className="flex items-center gap-3">
@@ -67,27 +68,30 @@ export default function Header() {
                     {(user.role === 'admin' || user.role === 'hr') && (
                       <Link
                         to="/dashboard"
-                        className="px-3 py-2 text-text-primary hover:bg-background"
+                        className="px-3 py-2 text-text-primary hover:bg-background flex items-center gap-2"
                         onClick={() => setOpen(false)}
                       >
-                        Dashboard
+                        <FiGrid className="w-4 h-4 text-text-secondary" />
+                        <span>Dashboard</span>
                       </Link>
                     )}
                     {user.role === 'jobseeker' && (
                       <Link
                         to="/account/settings"
-                        className="px-3 py-2 text-text-primary hover:bg-background"
+                        className="px-3 py-2 text-text-primary hover:bg-background flex items-center gap-2"
                         onClick={() => setOpen(false)}
                       >
-                        Settings
+                        <FiSettings className="w-4 h-4 text-text-secondary" />
+                        <span>Settings</span>
                       </Link>
                     )}
                     <Link
                       to="/change-password"
-                      className="px-3 py-2 text-text-primary hover:bg-background"
+                      className="px-3 py-2 text-text-primary hover:bg-background flex items-center gap-2"
                       onClick={() => setOpen(false)}
                     >
-                      Change Password
+                      <FiKey className="w-4 h-4 text-text-secondary" />
+                      <span>Change Password</span>
                     </Link>
                     <Link
                       to="/"
@@ -95,9 +99,10 @@ export default function Header() {
                         setOpen(false);
                         logout();
                       }}
-                      className="px-3 py-2 text-text-primary hover:bg-background"
+                      className="px-3 py-2 text-text-primary hover:bg-background flex items-center gap-2"
                     >
-                      Logout
+                      <FiLogOut className="w-4 h-4 text-text-secondary" />
+                      <span>Logout</span>
                     </Link>
                   </div>
                 </div>

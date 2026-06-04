@@ -1,7 +1,7 @@
 export function formatRupiah(value) {
   if (value === undefined || value === null || value === '') return '';
   const n = Number(String(value).replace(/[^0-9.-]+/g, ''));
-  if (!Number.isFinite(n) || n === 0) return '';
+  if (!Number.isFinite(n)) return '';
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',

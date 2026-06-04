@@ -50,11 +50,11 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="p-6 flex-1">
+      <main className="p-6 pb-16 flex-1">
         <div className="mx-auto max-w-6xl">
           <section className="mb-6 p-6 bg-white rounded shadow-sm border border-zinc-200">
             <h1 className="text-2xl font-bold text-text-primary">
-              Bergabunglah dengan Tim Kami di PT. Kami Hire Kamu
+              Bergabunglah dengan Tim Kami di PT. XYZ
             </h1>
             <p className="mt-2 text-text-secondary">
               Kami mencari talenta terbaik untuk membangun masa depan bersama.

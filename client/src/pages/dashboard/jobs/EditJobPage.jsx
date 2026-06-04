@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import JobForm from '../../../shared/JobForm';
 import { fetchJobDetail } from '../../../services/api';
 import { updateJob } from '../../../services/jobs';
+import { FiEdit3 } from 'react-icons/fi';
 
 export default function JobEditPage() {
   const { id } = useParams();
@@ -26,11 +27,14 @@ export default function JobEditPage() {
     if (job?.id) navigate(`/dashboard/jobs/${job.id}`);
   }
 
-  if (!initial) return <p>Loading…</p>;
+  if (!initial) return <div className="text-text-secondary p-4">Loading…</div>;
 
   return (
-    <div className="p-4 bg-surface rounded border border-border">
-      <h2 className="text-lg font-semibold mb-3">Edit Job</h2>
+    <div className="p-6 bg-surface border border-border rounded-xl shadow-sm">
+      <h2 className="text-xl font-bold text-text-primary mb-6 flex items-center gap-2 border-b border-border/60 pb-4">
+        <FiEdit3 className="w-5.5 h-5.5 text-warning" />
+        <span>Edit Job</span>
+      </h2>
       <JobForm initial={initial} onSubmit={handleSubmit} />
     </div>
   );
