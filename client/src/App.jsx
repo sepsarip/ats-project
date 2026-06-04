@@ -4,8 +4,10 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import JobDetailPage from './pages/JobDetailPage';
 import AccountSettingsPage from './pages/AccountSettingsPage';
+import ChangePasswordPage from './pages/ChangePasswordPage';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './context/AuthContext';
+import DashboardRoutes from './pages/dashboard';
 
 function App() {
   return (
@@ -22,6 +24,22 @@ function App() {
             element={
               <PrivateRoute requiredRole="jobseeker">
                 <AccountSettingsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/change-password"
+            element={
+              <PrivateRoute>
+                <ChangePasswordPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard/*"
+            element={
+              <PrivateRoute requiredRole={['admin', 'hr']}>
+                <DashboardRoutes />
               </PrivateRoute>
             }
           />

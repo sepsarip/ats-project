@@ -108,7 +108,7 @@ export default function ProfilesForm() {
 
       <div>
         <label className="block text-sm text-text-secondary mb-1">Email</label>
-        <div className="px-3 py-2 border border-border rounded bg-surface text-text-primary">
+        <div className="px-3 py-2 border border-border rounded bg-zinc-200 text-text-primary">
           {form.email}
         </div>
       </div>
@@ -118,7 +118,7 @@ export default function ProfilesForm() {
         name="phone"
         value={form.phone}
         onChange={onChange}
-        placeholder="+628xxxxxxxxx"
+        placeholder="628xxxxxxxxx"
         required
       />
 

@@ -16,8 +16,9 @@ export default function LoginPage() {
     try {
       const res = await login(email, password);
       if (res?.user) {
-        // redirect to home for now; role-based redirect can be added later
-        navigate('/');
+        const role = res.user?.role;
+        if (role === 'admin' || role === 'hr') navigate('/dashboard');
+        else navigate('/');
       }
     } catch (err) {
       setError(err?.response?.data?.message || 'Gagal login');

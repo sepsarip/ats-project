@@ -8,8 +8,12 @@ export default function PrivateRoute({ children, requiredRole }) {
   // wait until auth state is restored or login is in progress
   if (!initialized || loading) return null;
   if (!user) return <Navigate to="/login" replace />;
-  if (requiredRole && user.role !== requiredRole)
-    return <Navigate to="/" replace />;
+
+  // requiredRole can be a string or array of strings
+  if (requiredRole) {
+    const allowed = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+    if (!allowed.includes(user.role)) return <Navigate to="/" replace />;
+  }
 
   return children;
 }

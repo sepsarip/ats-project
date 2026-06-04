@@ -1,25 +1,27 @@
 import React from 'react';
-import { FiX, FiLogOut, FiUser, FiClock, FiFileText } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { FiX, FiLogOut, FiHome, FiBriefcase, FiUsers, FiUserPlus } from 'react-icons/fi';
 
-export default function AccountSidebar({
-  active = 'profiles',
-  onChange,
-  onClose,
-}) {
-  const { logout } = useAuth() || {};
+export default function DashboardSidebar({ onClose }) {
+  const loc = useLocation();
+  const { user, logout } = useAuth() || {};
+  const isAdmin = user?.role === 'admin';
   const items = [
-    { key: 'profiles', label: 'Profiles', icon: FiUser },
-    { key: 'history', label: 'History Applications', icon: FiClock },
-    { key: 'cv', label: 'CV Management', icon: FiFileText },
+    { to: '/dashboard', label: 'Beranda', icon: FiHome },
+    { to: '/dashboard/jobs', label: 'Job Management', icon: FiBriefcase },
+    { to: '/dashboard/candidates', label: 'Candidate Management', icon: FiUsers },
   ];
+
+  if (isAdmin) {
+    items.push({ to: '/dashboard/hr/create', label: 'Create HR Account', icon: FiUserPlus });
+  }
 
   return (
     <aside className="w-64 h-full bg-sidebar p-4 border-r border-border flex flex-col justify-between">
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-text-primary">Settings</h3>
+          <h3 className="font-semibold text-text-primary">Dashboard</h3>
           {onClose && (
             <button
               onClick={onClose}
@@ -32,19 +34,24 @@ export default function AccountSidebar({
         </div>
         <nav className="flex flex-col gap-2">
           {items.map((it) => {
+            const isRootDashboard = it.to === '/dashboard';
+            const isActive = isRootDashboard
+              ? loc.pathname === '/dashboard'
+              : loc.pathname.startsWith(it.to);
             const Icon = it.icon;
             return (
-              <button
-                key={it.key}
-                onClick={() => onChange && onChange(it.key)}
-                className={`flex items-center gap-2 text-left px-3 py-2 rounded transition-colors ${active === it.key
+              <Link
+                key={it.to}
+                to={it.to}
+                onClick={onClose}
+                className={`flex items-center gap-2 px-3 py-2 rounded transition-colors ${isActive
                   ? 'bg-primary text-white'
                   : 'text-text-primary hover:bg-primary hover:text-white'
                   }`}
               >
                 <Icon className="w-5 h-5" />
                 <span>{it.label}</span>
-              </button>
+              </Link>
             );
           })}
         </nav>
