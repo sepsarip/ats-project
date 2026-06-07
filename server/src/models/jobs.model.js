@@ -173,3 +173,13 @@ export async function deleteJob(id) {
   const { rows } = await pool.query(q, [id]);
   return rows[0];
 }
+
+export async function countJobsGroupedByStatus() {
+  const q = `
+    SELECT status, COUNT(*)::int AS count
+    FROM ats_jobs
+    GROUP BY status
+  `;
+  const { rows } = await pool.query(q);
+  return rows;
+}

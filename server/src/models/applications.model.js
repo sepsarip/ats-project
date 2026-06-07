@@ -143,7 +143,7 @@ export async function listCandidatesByJob(
     LEFT JOIN users u ON a.user_id = u.id
     LEFT JOIN profiles p ON u.id = p.user_id
     WHERE ${conditions.join(' AND ')}
-    ORDER BY a.applied_at DESC
+    ORDER BY a.score DESC NULLS LAST, a.applied_at DESC
     LIMIT $${idx} OFFSET $${idx + 1}
   `;
 
@@ -233,4 +233,26 @@ export async function updateApplicationStatusById(
   const values = [status, applicationId];
   const { rows } = await client.query(q, values);
   return rows[0] || null;
+}
+
+export async function updateApplicationScoreById(client, applicationId, score) {
+  const q = `
+    UPDATE applications
+    SET score = $1, updated_at = current_timestamp
+    WHERE id = $2
+    RETURNING id, status, score, updated_at
+  `;
+  const values = [score, applicationId];
+  const { rows } = await client.query(q, values);
+  return rows[0] || null;
+}
+
+export async function countApplicationsGroupedByStatus() {
+  const q = `
+    SELECT status, COUNT(*)::int AS count
+    FROM applications
+    GROUP BY status
+  `;
+  const { rows } = await pool.query(q);
+  return rows;
 }

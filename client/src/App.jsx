@@ -1,15 +1,51 @@
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import JobDetailPage from './pages/JobDetailPage';
+import AccountSettingsPage from './pages/AccountSettingsPage';
+import ChangePasswordPage from './pages/ChangePasswordPage';
+import PrivateRoute from './components/PrivateRoute';
+import { AuthProvider } from './context/AuthContext';
+import DashboardRoutes from './pages/dashboard';
 
 function App() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-cyan-50 via-white to-emerald-50 p-6">
-      <div className="mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-        <h1 className="text-3xl font-bold text-slate-900">ATS Monorepo Scaffold</h1>
-        <p className="mt-3 text-slate-600">
-          Frontend React + Tailwind aktif. Backend API default URL: <strong>{apiBaseUrl}</strong>
-        </p>
-      </div>
-    </main>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/jobs/:id" element={<JobDetailPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+
+          <Route
+            path="/account/settings"
+            element={
+              <PrivateRoute requiredRole="jobseeker">
+                <AccountSettingsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/change-password"
+            element={
+              <PrivateRoute>
+                <ChangePasswordPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard/*"
+            element={
+              <PrivateRoute requiredRole={['admin', 'hr']}>
+                <DashboardRoutes />
+              </PrivateRoute>
+            }
+          />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 

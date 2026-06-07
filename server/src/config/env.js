@@ -11,6 +11,10 @@ const required = [
   'DB_PASSWORD',
   'JWT_SECRET',
   'AI_SERVICE_URL',
+  'AI_SERVICE_TIMEOUT_MS',
+  'ADMIN_FULL_NAME',
+  'ADMIN_EMAIL',
+  'ADMIN_PASSWORD',
 ];
 
 for (const key of required) {
@@ -34,6 +38,7 @@ export const env = {
     expiresIn: process.env.JWT_EXPIRES_IN || '1d',
   },
   aiServiceUrl: process.env.AI_SERVICE_URL,
+  aiServiceTimeoutMs: process.env.AI_SERVICE_TIMEOUT_MS || '15000',
   admin: {
     fullName: process.env.ADMIN_FULL_NAME,
     email: process.env.ADMIN_EMAIL,

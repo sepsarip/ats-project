@@ -7,6 +7,11 @@ RUN npm install
 
 COPY . .
 
+ARG VITE_API_BASE_URL=http://localhost:5000
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
+RUN npm run build
+
 EXPOSE 3000
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "preview"]

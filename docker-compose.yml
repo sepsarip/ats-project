@@ -25,6 +25,8 @@ services:
     restart: unless-stopped
     env_file:
       - ./ai-service/.env
+    volumes:
+      - ./ai-service/logs:/app/logs
     networks:
       - ats-internal
 

@@ -98,9 +98,18 @@ export async function uploadMyCv(userId, file) {
 
     (async () => {
       try {
-        const extracted = await aiService.extractCv(destPathAbs);
-        if (extracted && extracted.length > 0) {
-          await cvFilesModel.updateExtractedText(userId, extracted);
+        // Call AI service to extract text from CV
+        const data = await aiService.extractCv(destPathAbs);
+        if (data && typeof data === 'object' && data.extracted_text) {
+          await cvFilesModel.updateExtractedText(userId, data.extracted_text);
+          logger.info('CV extraction metadata', {
+            userId,
+            page_count: data.page_count,
+            processing_time_ms: data.processing_time_ms,
+            file_size: data.file_size,
+          });
+        } else if (data && typeof data === 'string' && data.length > 0) {
+          await cvFilesModel.updateExtractedText(userId, data);
         }
       } catch (err) {
         logger.error('Error extracting CV text:', err);
