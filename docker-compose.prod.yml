@@ -47,8 +47,8 @@ services:
         condition: service_healthy
       ai-service:
         condition: service_started
-    # Menjalankan database migration sebelum backend server start
-    command: sh -c "npm run migrate -- up && npm start"
+    # Menjalankan database migration & seeder admin (dengan || true agar tidak crash saat reboot jika admin sudah terdaftar) sebelum backend server start
+    command: sh -c "npm run migrate -- up && (npm run db:seed || true) && npm start"
     ports:
       - "127.0.0.1:5000:5000" # Hanya diakses via local reverse proxy Nginx
     networks:
