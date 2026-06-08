@@ -146,11 +146,12 @@ export default function JobDetailPage() {
                     </h4>
                     <p className="text-text-secondary text-sm leading-relaxed whitespace-pre-line">{job.about}</p>
                   </section>
+
+                  <Section title="Job Description" items={job.descriptions} />
                   <Section
                     title="Job Requirements"
                     items={job.requirements}
                   />
-                  <Section title="Job Description" items={job.descriptions} />
                   <Section
                     title="Additional Info"
                     items={job.additional_info}
