@@ -10,8 +10,8 @@ export default function CandidatesLandingPage() {
         <div>
           <h2 className="text-lg font-semibold">Candidate Management</h2>
           <p className="text-text-secondary mt-1">
-            Kandidat ditampilkan per lowongan. Pilih lowongan di Job Management
-            lalu buka halaman Candidates untuk melihat daftar kandidat.
+            Candidates are displayed per job. Select a job in Job Management
+            and then open the Candidates page to see the list of candidates.
           </p>
         </div>
         <Link
@@ -24,26 +24,26 @@ export default function CandidatesLandingPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mt-10">
         <div className="p-4 rounded border border-border bg-sidebar">
-          <h3 className="font-semibold mb-2">Cara Pakai:</h3>
+          <h3 className="font-semibold mb-2">How to use:</h3>
           <ol className="list-decimal pl-5 text-sm text-text-secondary space-y-1">
-            <li>Buka Job Management.</li>
-            <li>Pilih lowongan yang ingin dilihat kandidatnya.</li>
-            <li>Klik tombol Candidates untuk membuka daftar kandidat.</li>
+            <li>Open Job Management.</li>
+            <li>Select the job you want to see candidates for.</li>
+            <li>Click the Candidates button to open the candidate list.</li>
           </ol>
         </div>
 
         <div className="p-4 rounded border border-border bg-sidebar">
-          <h3 className="font-semibold mb-2">Yang Bisa Dilakukan:</h3>
+          <h3 className="font-semibold mb-2">What You Can Do:</h3>
           <ul className="list-disc pl-5 text-sm text-text-secondary space-y-1">
-            <li>Filter kandidat (status, gender, city, province).</li>
-            <li>Pagination dan pengaturan limit per halaman.</li>
-            <li>Lihat detail kandidat dan download CV.</li>
-            <li>Update status lamaran kandidat.</li>
+            <li>Filter candidates (status, gender, city, province).</li>
+            <li>Pagination and limit settings per page.</li>
+            <li>View candidate details and download Resume.</li>
+            <li>Update candidate application status.</li>
           </ul>
         </div>
 
         <div className="p-4 rounded border border-border bg-sidebar">
-          <h3 className="font-semibold mb-2">Status Lamaran:</h3>
+          <h3 className="font-semibold mb-2">Applications Status:</h3>
           <div className="text-sm text-text-secondary space-y-1">
             {APPLICATION_STATUSES.map((status) => (
               <div key={status.value} className="flex items-center gap-2">

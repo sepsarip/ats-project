@@ -37,7 +37,7 @@ export default function Header() {
               to="/register"
               className="text-text-secondary hover:text-text-primary"
             >
-              Daftar
+              Register
             </Link>
           )}
 

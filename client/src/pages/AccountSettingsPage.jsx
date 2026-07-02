@@ -38,7 +38,6 @@ export default function AccountSettingsPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      
       <div className="flex-1 flex flex-row min-h-0">
         {/* Desktop Sidebar (full height between header and footer) */}
         <div className="hidden md:block flex-shrink-0">
@@ -86,7 +85,7 @@ export default function AccountSettingsPage() {
                 {active === 'cv' && (
                   <section>
                     <h2 className="text-lg font-semibold text-text-primary mb-4">
-                      CV
+                      Resume
                     </h2>
                     <CvManager />
                   </section>

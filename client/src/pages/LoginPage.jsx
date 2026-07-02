@@ -22,7 +22,7 @@ export default function LoginPage() {
         else navigate('/');
       }
     } catch (err) {
-      setError(err?.response?.data?.message || 'Gagal login');
+      setError(err?.response?.data?.message || 'Failed to sign in');
     }
   }
 
@@ -73,7 +73,7 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded"
             >
-              {loading ? 'Memproses...' : 'Sign In'}
+              {loading ? 'Processing...' : 'Sign In'}
             </button>
           </div>
         </form>
