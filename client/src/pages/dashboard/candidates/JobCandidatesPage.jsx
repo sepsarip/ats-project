@@ -4,7 +4,7 @@ import CandidateFilters from '../../../components/CandidateFilters';
 import Pagination from '../../../components/Pagination';
 import {
   fetchJobCandidates,
-  downloadCandidateCv,
+  downloadCandidateResume,
 } from '../../../services/candidates';
 import { updateApplicationStatus } from '../../../services/applications';
 import { APPLICATION_STATUSES } from '../../../constants/applicationStatuses';
@@ -98,10 +98,10 @@ export default function JobCandidatesPage() {
     });
   }, [candidates, search]);
 
-  async function handleDownloadCv(userId) {
+  async function handleDownloadResume(userId) {
     setDownloadingUserId(userId);
     try {
-      const { blob, filename } = await downloadCandidateCv(jobId, userId);
+      const { blob, filename } = await downloadCandidateResume(jobId, userId);
       triggerDownload(blob, filename);
     } catch (e) {
       console.error('Download resume failed', e);
@@ -223,7 +223,7 @@ export default function JobCandidatesPage() {
                         </Link>
 
                         <button
-                          onClick={() => handleDownloadCv(c.user?.id)}
+                          onClick={() => handleDownloadResume(c.user?.id)}
                           disabled={
                             !c.user?.id || downloadingUserId === c.user?.id
                           }

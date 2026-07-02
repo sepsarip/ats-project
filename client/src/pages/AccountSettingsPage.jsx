@@ -5,12 +5,12 @@ import Footer from '../components/Footer';
 import AccountSidebar from '../components/AccountSidebar';
 import ProfilesForm from '../components/ProfilesForm';
 import ApplicationsHistory from '../components/ApplicationsHistory';
-import CvManager from '../components/CvManager';
+import ResumeManager from '../components/ResumeManager';
 import { FiMenu } from 'react-icons/fi';
 
 export default function AccountSettingsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const validTabs = useMemo(() => new Set(['profiles', 'history', 'cv']), []);
+  const validTabs = useMemo(() => new Set(['profiles', 'history', 'resume']), []);
   const initialTab = searchParams.get('tab');
   const [active, setActive] = useState(
     validTabs.has(initialTab) ? initialTab : 'profiles',
@@ -82,12 +82,12 @@ export default function AccountSettingsPage() {
                   </section>
                 )}
 
-                {active === 'cv' && (
+                {active === 'resume' && (
                   <section>
                     <h2 className="text-lg font-semibold text-text-primary mb-4">
                       Resume
                     </h2>
-                    <CvManager />
+                    <ResumeManager />
                   </section>
                 )}
               </main>

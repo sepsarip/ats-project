@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { getMyProfile } from '../services/profiles';
-import { uploadMyCv, deleteMyCv } from '../services/cv';
+import { uploadMyResume, deleteMyResume } from '../services/resume';
 import { formatFileSize } from '../utils/formatters';
 import { FiFileText, FiUploadCloud, FiTrash2, FiPlus, FiAlertCircle } from 'react-icons/fi';
 
-export default function CvManager() {
-  const [cv, setCv] = useState(null);
+export default function ResumeManager() {
+  const [resume, setResume] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -17,7 +17,7 @@ export default function CvManager() {
     setLoading(true);
     try {
       const data = await getMyProfile();
-      setCv(data?.cv || null);
+      setResume(data?.cv || null);
     } catch (err) {
       setError(
         err?.response?.data?.message || err?.message || 'Failed to load Resume',
@@ -45,9 +45,9 @@ export default function CvManager() {
     setError(null);
     setMessage(null);
     try {
-      const uploaded = await uploadMyCv(selectedFile);
+      const uploaded = await uploadMyResume(selectedFile);
       if (uploaded) {
-        setCv(uploaded);
+        setResume(uploaded);
         setMessage('Resume uploaded successfully');
       } else {
         setMessage('Resume uploaded');
@@ -63,7 +63,7 @@ export default function CvManager() {
   };
 
   const onDelete = async () => {
-    if (!cv) return;
+    if (!resume) return;
     const ok = window.confirm('Delete Resume? This action cannot be undone.');
     if (!ok) return;
 
@@ -71,8 +71,8 @@ export default function CvManager() {
     setError(null);
     setMessage(null);
     try {
-      await deleteMyCv();
-      setCv(null);
+      await deleteMyResume();
+      setResume(null);
       setMessage('Resume deleted successfully');
     } catch (err) {
       setError(
@@ -100,7 +100,7 @@ export default function CvManager() {
       )}
 
       <div className="mb-6">
-        {cv ? (
+        {resume ? (
           <div className="space-y-4">
             <div className="p-4 border border-border bg-zinc-50 rounded-lg flex items-center justify-between shadow-sm">
               <div className="flex items-center gap-3">
@@ -109,10 +109,10 @@ export default function CvManager() {
                 </div>
                 <div>
                   <div className="font-semibold text-text-primary text-sm break-all max-w-[200px] sm:max-w-xs md:max-w-md">
-                    {cv.file_name}
+                    {resume.file_name}
                   </div>
                   <div className="text-xs text-text-secondary mt-0.5">
-                    File Size: {formatFileSize(cv.file_size)}
+                    File Size: {formatFileSize(resume.file_size)}
                   </div>
                 </div>
               </div>

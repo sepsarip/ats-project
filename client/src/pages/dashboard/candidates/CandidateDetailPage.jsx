@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   fetchJobCandidateDetail,
-  downloadCandidateCv,
+  downloadCandidateResume,
 } from '../../../services/candidates';
 import { updateApplicationStatus } from '../../../services/applications';
 import { APPLICATION_STATUSES } from '../../../constants/applicationStatuses';
@@ -40,10 +40,10 @@ export default function CandidateDetailPage() {
     load();
   }, [load]);
 
-  async function handleDownloadCv() {
+  async function handleDownloadResume() {
     setDownloading(true);
     try {
-      const { blob, filename } = await downloadCandidateCv(jobId, userId);
+      const { blob, filename } = await downloadCandidateResume(jobId, userId);
       triggerDownload(blob, filename);
     } catch (e) {
       console.error('Download Resume failed', e);
@@ -78,7 +78,7 @@ export default function CandidateDetailPage() {
   if (error) return <p className="text-error">{error}</p>;
   if (!data) return <p>Candidate not found.</p>;
 
-  const { job, application, user, profile, cv } = data;
+  const { job, application, user, profile, cv: resume } = data;
 
   return (
     <div className="p-4 bg-surface rounded border border-border">
@@ -230,10 +230,10 @@ export default function CandidateDetailPage() {
           <div className="text-sm text-text-primary flex flex-wrap items-center justify-between gap-3">
             <div>
               <span className="text-text-secondary">File:</span>{' '}
-              {cv?.file_name || '-'}
+              {resume?.file_name || '-'}
             </div>
             <button
-              onClick={handleDownloadCv}
+              onClick={handleDownloadResume}
               disabled={downloading}
               title={downloading ? "Downloading Resume..." : "Download Resume"}
               className="inline-flex items-center gap-2 px-3 py-2 border border-border rounded hover:bg-sidebar text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50"

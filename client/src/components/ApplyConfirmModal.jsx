@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getMyProfile } from '../services/profiles';
 import { applyToJob } from '../services/applications';
+import { FiX } from 'react-icons/fi';
 
 function FieldRow({ label, value }) {
   return (
@@ -46,9 +47,9 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
       profileData?.user?.fullName || user?.fullName || user?.name || null;
     const phone = profileData?.profile?.phone || null;
     const portfolioUrl = profileData?.profile?.portfolio_url || null;
-    const cvFileName = profileData?.cv?.file_name || null;
+    const resumeFileName = profileData?.cv?.file_name || null;
 
-    return { fullName, phone, portfolioUrl, cvFileName };
+    return { fullName, phone, portfolioUrl, resumeFileName };
   }, [profileData, user]);
 
   const canSubmit =
@@ -157,7 +158,7 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
             className="text-text-secondary hover:text-text-primary"
             aria-label="Close"
           >
-            &#128936;
+            <FiX className="w-5 h-5" />
           </button>
         </div>
 
@@ -257,7 +258,7 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
                     <div className="mt-3 space-y-2">
                       <FieldRow label="Fullname" value={applicant.fullName} />
                       <FieldRow label="Phone" value={applicant.phone} />
-                      <FieldRow label="Resume" value={applicant.cvFileName} />
+                      <FieldRow label="Resume" value={applicant.resumeFileName} />
                       <FieldRow
                         label="Portfolio"
                         value={applicant.portfolioUrl}
@@ -279,7 +280,7 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
                             type="button"
                             onClick={() => {
                               onClose && onClose();
-                              navigate('/account/settings?tab=cv');
+                              navigate('/account/settings?tab=resume');
                             }}
                             className="px-3 py-2 rounded bg-sidebar hover:bg-border text-text-primary"
                           >
