@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import FormInput from '../components/FormInput';
+import { FiArrowLeft } from 'react-icons/fi';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -28,6 +29,14 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="w-full max-w-md p-6 bg-surface border border-border rounded shadow-sm">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-1 text-sm text-text-secondary hover:text-text-primary mb-4"
+          type="button"
+        >
+          <FiArrowLeft className="w-4 h-4" />
+          <span>Back</span>
+        </button>
         <h2 className="text-center text-xl font-semibold text-text-primary mb-4">
           Sign In
         </h2>
