@@ -1,3 +1,4 @@
+from app import logging_config
 import os
 import time
 from typing import Dict
@@ -25,11 +26,12 @@ def extract_text(file_path: str) -> Dict:
         logger.error(f'Failed to extract text from {file_path}: {str(e)}')
         raise RuntimeError(f'Failed to extract text: {str(e)}')
 
-    extracted_text = '\n'.join([t for t in text_parts if t])
+    extracted_text = '\n'.join([t for t in text_parts if t]).replace('\x00', '')
     file_size = os.path.getsize(file_path)
     processing_time_ms = int((time.time() - start) * 1000)
 
     logger.info(f'Text extraction completed: {page_count} pages, {file_size} bytes, {processing_time_ms} ms')
+    logger.info(f'Extracted text: {extracted_text}')
     return {
         'extracted_text': extracted_text,
         'page_count': page_count,
