@@ -20,9 +20,9 @@ export default function RegisterPage() {
     try {
       await registerApi(fullName, email, password);
       // show success message then redirect
-      setSuccess('Register berhasil. Mengarahkan ke halaman login...');
+      setSuccess('Register successfully. Redirecting to login...');
     } catch (err) {
-      setError(err?.response?.data?.message || 'Gagal registrasi');
+      setError(err?.response?.data?.message || 'Failed to register');
     } finally {
       setLoading(false);
     }
@@ -101,7 +101,7 @@ export default function RegisterPage() {
               disabled={loading}
               className="w-full px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded"
             >
-              {loading ? 'Memproses...' : 'Register'}
+              {loading ? 'Processing...' : 'Register'}
             </button>
           </div>
         </form>

@@ -54,13 +54,13 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl">
           <section className="mb-6 p-6 bg-white rounded shadow-sm border border-zinc-200">
             <h1 className="text-2xl font-bold text-text-primary">
-              Bergabunglah dengan Tim Kami di PT. XYZ
+              Join with our team at PT. XYZ
             </h1>
             <p className="mt-2 text-text-secondary">
-              Kami mencari talenta terbaik untuk membangun masa depan bersama.
+              We are looking for the best talents to build the future together.
             </p>
             <p className="mt-2 text-text-secondary">
-              Temukan lowongan yang sesuai dengan skill dan minatmu.
+              Find the right vacancies that match your skills and interests.
             </p>
 
             <div className="mt-4">
@@ -73,7 +73,7 @@ export default function HomePage() {
           </section>
 
           <section>
-            {loading && <div className="text-text-secondary">Memuat...</div>}
+            {loading && <div className="text-text-secondary">Loading...</div>}
             {error && (
               <div className="bg-error/10 border border-error/20 text-error p-4 rounded">
                 <div>{error}</div>
@@ -81,14 +81,14 @@ export default function HomePage() {
                   onClick={() => load({ page })}
                   className="mt-2 px-3 py-1 bg-error text-white rounded"
                 >
-                  Coba lagi
+                  Try Again
                 </button>
               </div>
             )}
 
             {!loading && !error && jobs.length === 0 && (
               <div className="text-text-secondary">
-                Tidak ada lowongan ditemukan. Coba ubah kata kunci atau filter.
+                No vacancies found. Try changing the keyword or filter.
               </div>
             )}
 

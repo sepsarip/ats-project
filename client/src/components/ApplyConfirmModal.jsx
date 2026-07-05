@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getMyProfile } from '../services/profiles';
 import { applyToJob } from '../services/applications';
+import { FiX } from 'react-icons/fi';
 
 function FieldRow({ label, value }) {
   return (
@@ -46,9 +47,9 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
       profileData?.user?.fullName || user?.fullName || user?.name || null;
     const phone = profileData?.profile?.phone || null;
     const portfolioUrl = profileData?.profile?.portfolio_url || null;
-    const cvFileName = profileData?.cv?.file_name || null;
+    const resumeFileName = profileData?.cv?.file_name || null;
 
-    return { fullName, phone, portfolioUrl, cvFileName };
+    return { fullName, phone, portfolioUrl, resumeFileName };
   }, [profileData, user]);
 
   const canSubmit =
@@ -85,7 +86,7 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
       } catch (err) {
         if (!mounted) return;
         setProfileError(
-          err?.response?.data?.message || err?.message || 'Gagal memuat profil',
+          err?.response?.data?.message || err?.message || 'Failed to load profile',
         );
         setProfileData(null);
       } finally {
@@ -120,7 +121,7 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
       setSubmittedApplication(application || { id: true });
     } catch (err) {
       setSubmitError(
-        err?.response?.data?.message || err?.message || 'Gagal submit aplikasi',
+        err?.response?.data?.message || err?.message || 'failed to submit applications',
       );
     } finally {
       setSubmitting(false);
@@ -145,10 +146,10 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
         <div className="p-5 border-b border-border flex items-start justify-between gap-4">
           <div>
             <h3 className="text-lg font-semibold text-text-primary">
-              Konfirmasi Apply Job
+              Confirm Apply Job
             </h3>
             <p className="text-sm text-text-secondary mt-1">
-              Pastikan data kamu sudah benar dan lengkap sebelum submit.
+              Make sure your data is correct and complete before submitting.
             </p>
           </div>
           <button
@@ -157,26 +158,26 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
             className="text-text-secondary hover:text-text-primary"
             aria-label="Close"
           >
-            &#128936;
+            <FiX className="w-5 h-5" />
           </button>
         </div>
 
         <div className="p-5 space-y-4 max-h-[70vh] overflow-auto">
           {!isJobOpen && (
             <Notice tone="warning">
-              Lowongan ini tidak sedang terbuka untuk apply.
+              This job is not open for application.
             </Notice>
           )}
 
           {!initialized || loading ? (
-            <div className="text-text-secondary">Memuat...</div>
+            <div className="text-text-secondary">Loading...</div>
           ) : !user ? (
             <Notice>
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <div className="font-medium">Login diperlukan</div>
+                  <div className="font-medium">Login</div>
                   <div className="text-sm text-text-secondary mt-1">
-                    Silakan login untuk melanjutkan apply.
+                    Please login to continue applying.
                   </div>
                 </div>
                 <button
@@ -190,7 +191,7 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
             </Notice>
           ) : !isJobseeker ? (
             <Notice tone="warning">
-              Hanya akun dengan role <b>jobseeker</b> yang bisa apply.
+              Only accounts with the <b>jobseeker</b> role can apply.
             </Notice>
           ) : submittedApplication ? (
             <Notice>
@@ -200,7 +201,7 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
                     Application submitted successfully
                   </div>
                   <div className="text-sm text-text-secondary mt-1">
-                    Kamu bisa cek statusnya di History Applications.
+                    You can check the status in History Applications.
                   </div>
                 </div>
                 <button
@@ -211,7 +212,7 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
                   }}
                   className="px-3 py-2 rounded bg-primary hover:bg-primary-hover text-white"
                 >
-                  Lihat aplikasi
+                  View applications
                 </button>
               </div>
             </Notice>
@@ -223,7 +224,7 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <section className="p-4 rounded border border-border bg-background">
                   <h4 className="font-semibold text-text-primary">
-                    Ringkasan Job
+                    Job Summary
                   </h4>
                   <div className="mt-3 space-y-2">
                     <FieldRow label="Title" value={job?.title} />
@@ -235,7 +236,7 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
                 <section className="p-4 rounded border border-border bg-background">
                   <div className="flex items-center justify-between">
                     <h4 className="font-semibold text-text-primary">
-                      Profil Kamu
+                      Your Profile
                     </h4>
                     <div>
                       <button
@@ -246,18 +247,18 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
                         }}
                         className="text-sm px-2 py-1 rounded bg-primary hover:bg-primary-hover text-white"
                       >
-                        Update Profil
+                        Update Profile
                       </button>
                     </div>
                   </div>
 
                   {profileLoading ? (
-                    <div className="mt-3 text-text-secondary">Memuat...</div>
+                    <div className="mt-3 text-text-secondary">Loading...</div>
                   ) : (
                     <div className="mt-3 space-y-2">
                       <FieldRow label="Fullname" value={applicant.fullName} />
                       <FieldRow label="Phone" value={applicant.phone} />
-                      <FieldRow label="CV" value={applicant.cvFileName} />
+                      <FieldRow label="Resume" value={applicant.resumeFileName} />
                       <FieldRow
                         label="Portfolio"
                         value={applicant.portfolioUrl}
@@ -270,20 +271,20 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
                       <Notice tone="warning">
                         <div className="flex items-center justify-between gap-3">
                           <div>
-                            <div className="font-medium">CV belum ada</div>
+                            <div className="font-medium">Resume is not uploaded</div>
                             <div className="text-sm text-text-secondary mt-1">
-                              Silahkan Upload CV sebelum apply job.
+                              Please upload Resume before applying for the job.
                             </div>
                           </div>
                           <button
                             type="button"
                             onClick={() => {
                               onClose && onClose();
-                              navigate('/account/settings?tab=cv');
+                              navigate('/account/settings?tab=resume');
                             }}
                             className="px-3 py-2 rounded bg-sidebar hover:bg-border text-text-primary"
                           >
-                            Kelola CV
+                            Manage Resume
                           </button>
                         </div>
                       </Notice>
@@ -301,7 +302,7 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
             onClick={onClose}
             className="px-3 py-2 rounded border border-border bg-surface text-text-primary hover:bg-background"
           >
-            {submittedApplication ? 'Tutup' : 'Cancel'}
+            {submittedApplication ? 'Close' : 'Cancel'}
           </button>
 
           {!submittedApplication && (

@@ -29,7 +29,7 @@ export default function HomeDashboard() {
         if (!cancelled) {
           setError(
             err?.response?.data?.message ||
-            'Gagal memuat statistik dashboard. Coba lagi nanti.',
+            'Failed to load dashboard statistics. Try again later.',
           );
         }
       } finally {
@@ -88,7 +88,7 @@ export default function HomeDashboard() {
       <div className="p-4 bg-surface rounded border border-border">
         <h2 className="text-lg font-semibold text-text-primary">Beranda</h2>
         <p className="text-sm text-text-secondary">
-          Ringkasan statistik lowongan dan pelamaran.
+          Summary of job and application statistics.
         </p>
       </div>
 
@@ -100,7 +100,7 @@ export default function HomeDashboard() {
 
       {loading ? (
         <div className="p-4 bg-surface rounded border border-border text-text-secondary">
-          Memuat statistik...
+          Loading dashboard statistics...
         </div>
       ) : (
         <>

@@ -4,7 +4,7 @@ import CandidateFilters from '../../../components/CandidateFilters';
 import Pagination from '../../../components/Pagination';
 import {
   fetchJobCandidates,
-  downloadCandidateCv,
+  downloadCandidateResume,
 } from '../../../services/candidates';
 import { updateApplicationStatus } from '../../../services/applications';
 import { APPLICATION_STATUSES } from '../../../constants/applicationStatuses';
@@ -98,14 +98,14 @@ export default function JobCandidatesPage() {
     });
   }, [candidates, search]);
 
-  async function handleDownloadCv(userId) {
+  async function handleDownloadResume(userId) {
     setDownloadingUserId(userId);
     try {
-      const { blob, filename } = await downloadCandidateCv(jobId, userId);
+      const { blob, filename } = await downloadCandidateResume(jobId, userId);
       triggerDownload(blob, filename);
     } catch (e) {
-      console.error('Download CV failed', e);
-      alert('Download CV failed');
+      console.error('Download resume failed', e);
+      alert('Download resume failed');
     } finally {
       setDownloadingUserId(null);
     }
@@ -174,7 +174,7 @@ export default function JobCandidatesPage() {
                 <th className="px-2 py-2 w-12 text-center text-sm font-semibold">No</th>
                 <th className="px-2 py-2 w-[22%] text-sm font-semibold">Name</th>
                 <th className="px-2 py-2 w-[15%] text-sm font-semibold">Status</th>
-                <th className="px-2 py-2 w-[13%] text-sm font-semibold">Score CV</th>
+                <th className="px-2 py-2 w-[13%] text-sm font-semibold">Resume Score</th>
                 <th className="px-2 py-2 w-[15%] text-sm font-semibold">Applied At</th>
                 <th className="px-2 py-2 w-[30%] text-sm font-semibold">Actions</th>
               </tr>
@@ -195,7 +195,7 @@ export default function JobCandidatesPage() {
                   <th className="px-2 py-2 w-12 text-center text-sm font-semibold">No</th>
                   <th className="px-2 py-2 w-[22%] text-sm font-semibold">Name</th>
                   <th className="px-2 py-2 w-[15%] text-sm font-semibold">Status</th>
-                  <th className="px-2 py-2 w-[13%] text-sm font-semibold">Score CV</th>
+                  <th className="px-2 py-2 w-[13%] text-sm font-semibold">Resume Score</th>
                   <th className="px-2 py-2 w-[15%] text-sm font-semibold">Applied At</th>
                   <th className="px-2 py-2 w-[30%] text-sm font-semibold">Actions</th>
                 </tr>
@@ -223,11 +223,11 @@ export default function JobCandidatesPage() {
                         </Link>
 
                         <button
-                          onClick={() => handleDownloadCv(c.user?.id)}
+                          onClick={() => handleDownloadResume(c.user?.id)}
                           disabled={
                             !c.user?.id || downloadingUserId === c.user?.id
                           }
-                          title={downloadingUserId === c.user?.id ? 'Downloading CV...' : 'Download CV'}
+                          title={downloadingUserId === c.user?.id ? 'Downloading resume...' : 'Download resume'}
                           className="inline-flex items-center justify-center w-8 h-8 rounded border border-border hover:bg-sidebar text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50"
                         >
                           {downloadingUserId === c.user?.id ? (
@@ -285,7 +285,7 @@ export default function JobCandidatesPage() {
 
           {search && filteredCandidates.length === 0 && (
             <p className="mt-3 text-sm text-text-secondary">
-              Tidak ada hasil untuk pencarian di page ini.
+              No results for the search on this page.
             </p>
           )}
         </>

@@ -2,27 +2,27 @@ export const APPLICATION_STATUSES = [
   {
     value: 'applied',
     label: 'Applied',
-    description: 'Kandidat melamar pekerjaan dan belum diproses lebih lanjut.',
+    description: 'The candidate has applied for the job but has not yen been processed further.',
   },
   {
     value: 'interview',
     label: 'Interview',
-    description: 'Kandidat masuk tahap wawancara.',
+    description: 'The candidate has entered the interview stage.',
   },
   {
     value: 'offered',
     label: 'Offered',
-    description: 'Kandidat telah diberikan penawaran pekerjaan.',
+    description: 'The candidate has been offered the job.',
   },
   {
     value: 'hired',
     label: 'Hired',
-    description: 'Kandidat telah resmi dipekerjakan.',
+    description: 'The candidate has been officially hired.',
   },
   {
     value: 'rejected',
     label: 'Rejected',
-    description: 'Kandidat telah ditolak dan tidak akan diproses lebih lanjut.',
+    description: 'The candidate has been rejected and will not be processed further.',
   },
 ];
 

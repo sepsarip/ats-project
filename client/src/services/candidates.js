@@ -16,7 +16,7 @@ export async function fetchJobCandidateDetail(jobId, userId) {
   return res.data?.data || null;
 }
 
-export async function downloadCandidateCv(jobId, userId) {
+export async function downloadCandidateResume(jobId, userId) {
   if (!jobId) throw new Error('jobId is required');
   if (!userId) throw new Error('userId is required');
 
@@ -31,7 +31,7 @@ export async function downloadCandidateCv(jobId, userId) {
     res.headers?.['content-disposition'] ||
     res.headers?.['Content-Disposition'];
   const filename =
-    getFilenameFromContentDisposition(disposition) || `cv_${userId}`;
+    getFilenameFromContentDisposition(disposition) || `resume_${userId}`;
 
   return { blob: res.data, filename };
 }
@@ -39,5 +39,5 @@ export async function downloadCandidateCv(jobId, userId) {
 export default {
   fetchJobCandidates,
   fetchJobCandidateDetail,
-  downloadCandidateCv,
+  downloadCandidateResume,
 };

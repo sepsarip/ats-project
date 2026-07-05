@@ -48,7 +48,7 @@ export default function JobCard({ job }) {
           to={`/jobs/${job?.id}`}
           className="bg-primary hover:bg-primary-hover text-white px-3 py-1 rounded-md text-sm"
         >
-          Lihat Detail
+          See Detail
         </Link>
       </div>
     </article>
