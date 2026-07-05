@@ -1,3 +1,4 @@
+from app import logging_config
 import os
 import time
 from typing import Dict
