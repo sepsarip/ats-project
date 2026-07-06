@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import FormInput from '../components/FormInput';
 import { changePassword } from '../services/auth';
+import { FiArrowLeft } from 'react-icons/fi';
 
 export default function ChangePasswordPage() {
+  const navigate = useNavigate();
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -19,17 +22,17 @@ export default function ChangePasswordPage() {
 
     // Front-end validations
     if (newPassword.length < 6) {
-      setError('Password baru minimal 6 karakter');
+      setError('New password must be at least 6 characters');
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError('Konfirmasi password tidak cocok');
+      setError('Confirmation password does not match');
       return;
     }
 
     if (newPassword === oldPassword) {
-      setError('Password baru tidak boleh sama dengan password lama');
+      setError('New password cannot be same as old password');
       return;
     }
 
@@ -40,13 +43,13 @@ export default function ChangePasswordPage() {
         newPassword,
         confirmPassword,
       );
-      setSuccess(res?.message || 'Password berhasil diubah');
+      setSuccess(res?.message || 'Password changed successfully');
       // Reset form fields
       setOldPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err) {
-      setError(err?.response?.data?.message || 'Gagal mengubah password');
+      setError(err?.response?.data?.message || 'Failed to change password');
     } finally {
       setLoading(false);
     }
@@ -58,8 +61,16 @@ export default function ChangePasswordPage() {
 
       <main className="flex-1 flex items-center justify-center py-12 px-4">
         <div className="w-full max-w-md p-6 bg-surface border border-border rounded shadow-sm">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-1 text-sm text-text-secondary hover:text-text-primary mb-4"
+            type="button"
+          >
+            <FiArrowLeft className="w-4 h-4" />
+            <span>Back</span>
+          </button>
           <h1 className="text-center text-xl font-semibold text-text-primary mb-6">
-            Ubah Password
+            Change Password
           </h1>
 
           {error && (
@@ -76,7 +87,7 @@ export default function ChangePasswordPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <FormInput
-              label="Password Lama"
+              label="Old Password"
               type="password"
               name="oldPassword"
               value={oldPassword}
@@ -85,7 +96,7 @@ export default function ChangePasswordPage() {
               showToggle
             />
             <FormInput
-              label="Password Baru"
+              label="New Password"
               type="password"
               name="newPassword"
               value={newPassword}
@@ -94,7 +105,7 @@ export default function ChangePasswordPage() {
               showToggle
             />
             <FormInput
-              label="Konfirmasi Password Baru"
+              label="Confirm New Password"
               type="password"
               name="confirmPassword"
               value={confirmPassword}
@@ -109,7 +120,7 @@ export default function ChangePasswordPage() {
                 disabled={loading}
                 className="w-full px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? 'Memproses...' : 'Ubah Password'}
+                {loading ? 'Processing...' : 'Change Password'}
               </button>
             </div>
           </form>

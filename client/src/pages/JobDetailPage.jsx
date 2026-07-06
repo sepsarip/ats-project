@@ -78,12 +78,12 @@ export default function JobDetailPage() {
               className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-text-primary font-medium transition-colors"
             >
               <FiArrowLeft className="w-4 h-4" />
-              <span>Kembali</span>
+              <span>Back</span>
             </button>
           </div>
 
           <div className="bg-surface border border-border rounded-xl shadow-sm p-6 sm:p-8">
-            {loading && <div className="text-text-secondary">Memuat...</div>}
+            {loading && <div className="text-text-secondary">Loading...</div>}
             {error && (
               <div className="bg-error/10 border border-error/20 text-error p-4 rounded-lg">
                 <div>{error}</div>
@@ -92,7 +92,7 @@ export default function JobDetailPage() {
 
             {!loading && !error && !job && (
               <div className="text-text-secondary">
-                Lowongan tidak ditemukan.
+                Job not found.
               </div>
             )}
 

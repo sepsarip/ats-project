@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   fetchJobCandidateDetail,
-  downloadCandidateCv,
+  downloadCandidateResume,
 } from '../../../services/candidates';
 import { updateApplicationStatus } from '../../../services/applications';
 import { APPLICATION_STATUSES } from '../../../constants/applicationStatuses';
@@ -40,14 +40,14 @@ export default function CandidateDetailPage() {
     load();
   }, [load]);
 
-  async function handleDownloadCv() {
+  async function handleDownloadResume() {
     setDownloading(true);
     try {
-      const { blob, filename } = await downloadCandidateCv(jobId, userId);
+      const { blob, filename } = await downloadCandidateResume(jobId, userId);
       triggerDownload(blob, filename);
     } catch (e) {
-      console.error('Download CV failed', e);
-      alert('Download CV failed');
+      console.error('Download Resume failed', e);
+      alert('Download Resume failed');
     } finally {
       setDownloading(false);
     }
@@ -78,7 +78,7 @@ export default function CandidateDetailPage() {
   if (error) return <p className="text-error">{error}</p>;
   if (!data) return <p>Candidate not found.</p>;
 
-  const { job, application, user, profile, cv } = data;
+  const { job, application, user, profile, cv: resume } = data;
 
   return (
     <div className="p-4 bg-surface rounded border border-border">
@@ -111,7 +111,7 @@ export default function CandidateDetailPage() {
               {application?.status || '-'}
             </div>
             <div>
-              <span className="text-text-secondary">Score CV:</span>{' '}
+              <span className="text-text-secondary">Resume Score:</span>{' '}
               {application?.score === null || application?.score === undefined
                 ? '-'
                 : application.score}{' '}
@@ -226,16 +226,16 @@ export default function CandidateDetailPage() {
         </section>
 
         <section className="border border-border rounded p-3 md:col-span-2">
-          <h3 className="font-semibold mb-2">CV</h3>
+          <h3 className="font-semibold mb-2">Resume</h3>
           <div className="text-sm text-text-primary flex flex-wrap items-center justify-between gap-3">
             <div>
               <span className="text-text-secondary">File:</span>{' '}
-              {cv?.file_name || '-'}
+              {resume?.file_name || '-'}
             </div>
             <button
-              onClick={handleDownloadCv}
+              onClick={handleDownloadResume}
               disabled={downloading}
-              title={downloading ? "Downloading CV..." : "Download CV"}
+              title={downloading ? "Downloading Resume..." : "Download Resume"}
               className="inline-flex items-center gap-2 px-3 py-2 border border-border rounded hover:bg-sidebar text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50"
             >
               {downloading ? (

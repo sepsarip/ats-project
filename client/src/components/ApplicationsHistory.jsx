@@ -56,7 +56,7 @@ export default function ApplicationsHistory({ defaultLimit = 10 }) {
     load({ page });
   }, [load, page]);
 
-  if (loading) return <div className="text-text-secondary">Memuat...</div>;
+  if (loading) return <div className="text-text-secondary">Loading...</div>;
 
   if (error) return <div className="text-error">{error}</div>;
 
@@ -67,17 +67,17 @@ export default function ApplicationsHistory({ defaultLimit = 10 }) {
           <FiBriefcase className="w-10 h-10" />
         </div>
         <h3 className="text-lg font-semibold text-text-primary mb-2">
-          Belum Ada Lamaran Pekerjaan
+          No Applications yet
         </h3>
         <p className="text-text-secondary text-sm max-w-sm mb-6 leading-relaxed">
-          Anda belum melamar ke lowongan kerja mana pun. Jelajahi berbagai peluang karir menarik di platform kami dan kirimkan lamaran pertama Anda hari ini!
+          You haven't applied for any job yet. Explore various interesting career opportunities on our platform and send your first application today!
         </p>
         <Link
           to="/"
           className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-lg font-medium shadow-md transition-all hover:scale-105 duration-200"
         >
           <FiSearch className="w-5 h-5" />
-          <span>Cari Lowongan Kerja</span>
+          <span>Search Job</span>
         </Link>
       </div>
     );
@@ -135,7 +135,7 @@ export default function ApplicationsHistory({ defaultLimit = 10 }) {
                 to={`/jobs/${a.job?.id}`}
                 className="bg-primary hover:bg-primary-hover text-white px-3 py-1 rounded-md text-sm"
               >
-                Lihat Detail
+                See Detail
               </Link>
             </div>
           </article>

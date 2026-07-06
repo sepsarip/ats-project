@@ -196,10 +196,10 @@ export default function JobsListPage() {
                       </span>
                     </td>
                     <td className="px-3 py-3 text-sm text-text-secondary">
-                      {j.min_salary != null ? formatRupiah(j.min_salary) : 'Belum ditentukan'}
+                      {j.min_salary != null ? formatRupiah(j.min_salary) : 'Not yet determined'}
                     </td>
                     <td className="px-3 py-3 text-sm text-text-secondary">
-                      {j.max_salary != null ? formatRupiah(j.max_salary) : 'Belum ditentukan'}
+                      {j.max_salary != null ? formatRupiah(j.max_salary) : 'Not yet determined'}
                     </td>
                     <td className="px-3 py-3 text-sm">
                       <div className="flex items-center gap-2">

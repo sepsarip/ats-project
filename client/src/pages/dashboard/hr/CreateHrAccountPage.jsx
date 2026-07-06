@@ -30,7 +30,7 @@ export default function CreateHrAccountPage() {
       setEmail('');
       setPassword('');
     } catch (err) {
-      setSubmitError(err?.response?.data?.message || 'Gagal membuat akun HR');
+      setSubmitError(err?.response?.data?.message || 'Failed to create HR account');
     } finally {
       setSubmitting(false);
     }

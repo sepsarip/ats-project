@@ -15,7 +15,7 @@ export default function CandidateFilters({
           type="text"
           value={search || ''}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Cari nama atau email..."
+          placeholder="Search candidate by name or email..."
           className="w-full md:flex-1 md:min-w-[200px] px-3 py-2 border border-border rounded bg-surface text-text-primary focus:outline-none focus:border-primary"
         />
       )}
@@ -25,7 +25,7 @@ export default function CandidateFilters({
         onChange={(e) => onChange({ ...filters, status: e.target.value })}
         className="w-full md:w-auto px-3 py-2 border border-border rounded bg-surface text-text-primary cursor-pointer focus:outline-none focus:border-primary"
       >
-        <option value="">Semua Status</option>
+        <option value="">Status</option>
         <option value="applied">Applied</option>
         <option value="interview">Interview</option>
         <option value="offered">Offered</option>
@@ -38,7 +38,7 @@ export default function CandidateFilters({
         onChange={(e) => onChange({ ...filters, gender: e.target.value })}
         className="w-full md:w-auto px-3 py-2 border border-border rounded bg-surface text-text-primary cursor-pointer focus:outline-none focus:border-primary"
       >
-        <option value="">Semua Gender</option>
+        <option value="">Gender</option>
         <option value="male">Male</option>
         <option value="female">Female</option>
       </select>
@@ -66,7 +66,7 @@ export default function CandidateFilters({
         }
         className="w-full md:w-auto px-3 py-2 border border-border rounded bg-surface text-text-primary cursor-pointer focus:outline-none focus:border-primary"
       >
-        <option value="">Per halaman</option>
+        <option value="">Per Page</option>
         {limitOptions.map((l) => (
           <option key={l} value={l}>
             {l}
@@ -78,7 +78,7 @@ export default function CandidateFilters({
         onClick={onApply}
         className="w-full md:w-auto px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded md:ml-auto text-center"
       >
-        Terapkan
+        Search
       </button>
     </div>
   );

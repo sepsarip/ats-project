@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FormInput from '../components/FormInput';
 import { register as registerApi } from '../services/auth';
+import { FiArrowLeft } from 'react-icons/fi';
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState('');
@@ -19,9 +20,9 @@ export default function RegisterPage() {
     try {
       await registerApi(fullName, email, password);
       // show success message then redirect
-      setSuccess('Register berhasil. Mengarahkan ke halaman login...');
+      setSuccess('Register successfully. Redirecting to login...');
     } catch (err) {
-      setError(err?.response?.data?.message || 'Gagal registrasi');
+      setError(err?.response?.data?.message || 'Failed to register');
     } finally {
       setLoading(false);
     }
@@ -36,6 +37,14 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="w-full max-w-md p-6 bg-surface border border-border rounded shadow-sm">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-1 text-sm text-text-secondary hover:text-text-primary mb-4"
+          type="button"
+        >
+          <FiArrowLeft className="w-4 h-4" />
+          <span>Back</span>
+        </button>
         <h2 className="text-center text-xl font-semibold text-text-primary mb-4">
           Register (Jobseeker)
         </h2>
@@ -92,7 +101,7 @@ export default function RegisterPage() {
               disabled={loading}
               className="w-full px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded"
             >
-              {loading ? 'Memproses...' : 'Register'}
+              {loading ? 'Processing...' : 'Register'}
             </button>
           </div>
         </form>

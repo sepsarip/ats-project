@@ -12,7 +12,7 @@ export default function AccountSidebar({
   const items = [
     { key: 'profiles', label: 'Profiles', icon: FiUser },
     { key: 'history', label: 'History Applications', icon: FiClock },
-    { key: 'cv', label: 'CV Management', icon: FiFileText },
+    { key: 'resume', label: 'Manage Resume', icon: FiFileText },
   ];
 
   return (
