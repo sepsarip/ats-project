@@ -59,11 +59,11 @@ def _load_models():
             # convert synonym dict to patterns for EntityRuler. Each canonical and its variants become patterns for SKILL label
             for canonical, variants in _synonym_dict.items():
                 def make_pattern(text):
-                    tokens = text.strip().split()
-                    if len(tokens) == 1:
-                        return {"label": "SKILL", "pattern": text.lower()}
-                    else:
-                        return {"label": "SKILL", "pattern": [{"LOWER": t} for t in tokens]}
+                     tokens = text.strip().split()
+                     if len(tokens) == 1:
+                         return {"label": "SKILL", "pattern": text.lower()}
+                     else:
+                         return {"label": "SKILL", "pattern": [{"LOWER": t} for t in tokens]}
                 
                 # add canonical as a pattern
                 patterns.append(make_pattern(canonical))
@@ -98,6 +98,7 @@ def _preprocess(text: str, synonyms: Dict[str, str]) -> str:
         'c++': 'cpp',
         'c#': 'csharp',
         'node.js': 'nodejs',
+        'next.js': 'nextjs',
         'react.js': 'react',
         'express.js': 'express',
         'angular.js': 'angular',
@@ -119,7 +120,7 @@ def _preprocess(text: str, synonyms: Dict[str, str]) -> str:
             cannonical_clean = ' '.join(cannonical.split())
             variants_list = variants if isinstance(variants, list) else [variants]
             for variant in variants_list:
-                if variant.lower()== cannonical.lower():
+                if variant.lower() == cannonical.lower():
                     continue
                 t = re.sub(rf'\b{re.escape(variant.lower())}\b', ' ' + cannonical_clean + ' ', t)
         t = re.sub(r'\s+', ' ', t).strip()
@@ -155,7 +156,7 @@ def score(payload: dict) -> dict:
     try:
         _load_models()
         app_id = payload.get('application_id')
-        cv_text = payload.get('extracted_text_cv', '')
+        resume_text = payload.get('extracted_text_resume', payload.get('extracted_text_cv', ''))
         job_info = payload.get('job_info', {})
         requirements = job_info.get('requirements', []) or []
         descriptions = job_info.get('descriptions', []) or []
@@ -164,28 +165,28 @@ def score(payload: dict) -> dict:
         job_text = ' '.join([str(x) for x in requirements + descriptions])
 
         # preprocess
-        cv_processed = _preprocess(cv_text, _synonym_dict)
+        resume_processed = _preprocess(resume_text, _synonym_dict)
         job_processed = _preprocess(job_text, _synonym_dict)
 
         # NER enhancement: extract domain tokens and append
         try:
-            cv_tokens = _extract_domain_tokens(cv_text)
+            resume_tokens = _extract_domain_tokens(resume_text)
             job_tokens = _extract_domain_tokens(job_text)
-            logger.info('Extracted CV tokens: %s', cv_tokens)
+            logger.info('Extracted Resume tokens: %s', resume_tokens)
             logger.info('Extracted Job tokens: %s', job_tokens)
-            if cv_tokens:
-                cv_processed = cv_processed + ' ' + ' '.join(cv_tokens)
+            if resume_tokens:
+                resume_processed = resume_processed + ' ' + ' '.join(resume_tokens)
             if job_tokens:
                 job_processed = job_processed + ' ' + ' '.join(job_tokens)
         except Exception:
             logger.warning('NER enhancement failed, continuing without it')
 
         # embeddings
-        embeddings = _sbert_model.encode([cv_processed, job_processed], convert_to_numpy=True)
-        emb_cv = embeddings[0]
+        embeddings = _sbert_model.encode([resume_processed, job_processed], convert_to_numpy=True)
+        emb_resume = embeddings[0]
         emb_job = embeddings[1]
         try:
-            cosine_sim = float(cosine_similarity(emb_cv.reshape(1, -1), emb_job.reshape(1, -1))[0][0])
+            cosine_sim = float(cosine_similarity(emb_resume.reshape(1, -1), emb_job.reshape(1, -1))[0][0])
         except Exception:
             cosine_sim = 0.0
 

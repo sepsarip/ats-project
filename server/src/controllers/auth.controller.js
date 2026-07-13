@@ -43,7 +43,7 @@ export const changePassword = asyncHandler(async (req, res) => {
   logger.info('Password changed successfully', { userId });
   res.status(200).json({
     status: 'success',
-    message: 'Password berhasil diubah',
+    message: 'Password changed successfully.',
     data,
   });
 });

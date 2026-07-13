@@ -49,7 +49,7 @@ export async function findFullProfileByUserId(client, userId) {
       p.portfolio_url,
       p.birth_date,
       p.gender,
-      c.id AS cv_id,
+      c.id AS resume_id,
       c.file_name,
       c.file_path,
       c.mime_type,
@@ -57,7 +57,7 @@ export async function findFullProfileByUserId(client, userId) {
       c.uploaded_at
     FROM users u
     LEFT JOIN profiles p ON p.user_id = u.id
-    LEFT JOIN cv_files c ON c.user_id = u.id
+    LEFT JOIN resume_files c ON c.user_id = u.id
     WHERE u.id = $1
     LIMIT 1
   `;

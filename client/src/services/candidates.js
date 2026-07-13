@@ -21,7 +21,7 @@ export async function downloadCandidateResume(jobId, userId) {
   if (!userId) throw new Error('userId is required');
 
   const res = await api.get(
-    `/api/jobs/${jobId}/candidates/${userId}/cv/download`,
+    `/api/jobs/${jobId}/candidates/${userId}/resume/download`,
     {
       responseType: 'blob',
     },

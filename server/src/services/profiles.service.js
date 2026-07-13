@@ -3,7 +3,7 @@ import { HttpError } from '../utils/HttpError.js';
 import logger from '../config/logger.js';
 import * as usersModel from '../models/users.model.js';
 import * as profilesModel from '../models/profiles.model.js';
-import * as cvFilesModel from '../models/cvFiles.model.js';
+import * as resumeFilesModel from '../models/resumeFiles.model.js';
 import * as aiService from './ai.service.js';
 import fs from 'fs/promises';
 import path from 'path';
@@ -65,7 +65,7 @@ export async function updateMyProfile(userId, payload) {
   }
 }
 
-export async function uploadMyCv(userId, file) {
+export async function uploadMyResume(userId, file) {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -73,10 +73,10 @@ export async function uploadMyCv(userId, file) {
     // file: { path, originalname, mimetype, size }
     if (!file) throw new HttpError(400, 'No file uploaded', 'VALIDATION_ERROR');
 
-    const fileName = `user_${userId}_cv.pdf`;
-    const destPathAbs = path.join(process.cwd(), 'uploads', 'cv', fileName);
+    const fileName = `user_${userId}_resume.pdf`;
+    const destPathAbs = path.join(process.cwd(), 'uploads', 'resume', fileName);
     // public path to store in DB (use forward slashes)
-    const destPathDb = `/uploads/cv/${fileName}`;
+    const destPathDb = `/uploads/resume/${fileName}`;
 
     // If multer already saved file to a tmp path and destination equals that path,
     // we expect file.path to be the final path. Otherwise move file to dest.
@@ -86,7 +86,7 @@ export async function uploadMyCv(userId, file) {
       await fs.rename(file.path, destPathAbs);
     }
 
-    const row = await cvFilesModel.upsertByUserId(client, userId, {
+    const row = await resumeFilesModel.upsertByUserId(client, userId, {
       file_name: file.originalname || fileName,
       file_path: destPathDb,
       mime_type: file.mimetype || 'application/pdf',
@@ -98,26 +98,29 @@ export async function uploadMyCv(userId, file) {
 
     (async () => {
       try {
-        // Call AI service to extract text from CV
-        const data = await aiService.extractCv(destPathAbs);
+        // Call AI service to extract text from Resume
+        const data = await aiService.extractResume(destPathAbs);
         if (data && typeof data === 'object' && data.extracted_text) {
-          await cvFilesModel.updateExtractedText(userId, data.extracted_text);
-          logger.info('CV extraction metadata', {
+          await resumeFilesModel.updateExtractedText(
+            userId,
+            data.extracted_text,
+          );
+          logger.info('Resume extraction metadata', {
             userId,
             page_count: data.page_count,
             processing_time_ms: data.processing_time_ms,
             file_size: data.file_size,
           });
         } else if (data && typeof data === 'string' && data.length > 0) {
-          await cvFilesModel.updateExtractedText(userId, data);
+          await resumeFilesModel.updateExtractedText(userId, data);
         }
       } catch (err) {
-        logger.error('Error extracting CV text:', err);
+        logger.error('Error extracting Resume text:', err);
       }
     })();
 
     return {
-      cv: {
+      resume: {
         id: row.id,
         file_name: row.file_name,
         file_path: row.file_path,
@@ -129,8 +132,8 @@ export async function uploadMyCv(userId, file) {
   } catch (err) {
     await client.query('ROLLBACK');
     if (err instanceof HttpError) throw err;
-    logger.error('Error uploading CV:', err);
-    throw new HttpError(500, 'Failed to upload CV', 'CV_UPLOAD_FAILED');
+    logger.error('Error uploading Resume:', err);
+    throw new HttpError(500, 'Failed to upload Resume', 'RESUME_UPLOAD_FAILED');
   } finally {
     client.release();
   }
@@ -163,10 +166,10 @@ export async function getMyProfile(userId) {
       };
     }
 
-    let cv = null;
-    if (row.cv_id !== null) {
-      cv = {
-        id: row.cv_id,
+    let resume = null;
+    if (row.resume_id !== null) {
+      resume = {
+        id: row.resume_id,
         file_name: row.file_name,
         mime_type: row.mime_type,
         file_path: row.file_path,
@@ -175,7 +178,7 @@ export async function getMyProfile(userId) {
       };
     }
 
-    return { user, profile, cv };
+    return { user, profile, resume };
   } catch (err) {
     if (err instanceof HttpError) throw err;
     logger.error('Error fetching profile:', err);
@@ -189,40 +192,40 @@ export async function getMyProfile(userId) {
   }
 }
 
-export async function deleteMyCv(userId) {
+export async function deleteMyResume(userId) {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
-    const row = await cvFilesModel.getByUserId(client, userId);
+    const row = await resumeFilesModel.getByUserId(client, userId);
     if (!row) {
-      throw new HttpError(404, 'CV not found', 'CV_NOT_FOUND');
+      throw new HttpError(404, 'Resume not found', 'RESUME_NOT_FOUND');
     }
 
     const relPath = row.file_path && row.file_path.replace(/^\//, '');
     const absPath = path.join(process.cwd(), relPath);
 
-    const deleted = await cvFilesModel.deleteByUserId(client, userId);
+    const deleted = await resumeFilesModel.deleteByUserId(client, userId);
 
     await client.query('COMMIT');
 
     try {
       await fs.unlink(absPath);
-      logger.info('CV file deleted from disk', { userId, file: absPath });
+      logger.info('Resume file deleted from disk', { userId, file: absPath });
     } catch (err) {
-      logger.warn('Failed to delete CV file from disk', {
+      logger.warn('Failed to delete Resume file from disk', {
         userId,
         file: absPath,
         error: err && err.message,
       });
     }
 
-    return { status: 'success', message: 'CV deleted successfully' };
+    return { status: 'success', message: 'Resume deleted successfully' };
   } catch (err) {
     await client.query('ROLLBACK');
     if (err instanceof HttpError) throw err;
-    logger.error('Error deleting CV:', err);
-    throw new HttpError(500, 'Failed to delete CV', 'CV_DELETE_FAILED');
+    logger.error('Error deleting Resume:', err);
+    throw new HttpError(500, 'Failed to delete Resume', 'RESUME_DELETE_FAILED');
   } finally {
     client.release();
   }
