@@ -2,21 +2,21 @@ import { pool } from '../config/db.js';
 
 export async function insertApplication(
   client,
-  { job_id, user_id, cv_file_id },
+  { job_id, user_id, resume_file_id },
 ) {
   const q = `
-    INSERT INTO applications (job_id, user_id, cv_file_id)
+    INSERT INTO applications (job_id, user_id, resume_file_id)
     VALUES ($1, $2, $3)
-    RETURNING id, job_id, user_id, cv_file_id, status, applied_at
+    RETURNING id, job_id, user_id, resume_file_id, status, applied_at
   `;
-  const values = [job_id, user_id, cv_file_id];
+  const values = [job_id, user_id, resume_file_id];
   const { rows } = await client.query(q, values);
   return rows[0] || null;
 }
 
 export async function getApplicationByUserIdAndJobId(client, userId, jobId) {
   const q = `
-    SELECT id, job_id, user_id, cv_file_id, status, applied_at
+    SELECT id, job_id, user_id, resume_file_id, status, applied_at
     FROM applications
     WHERE user_id = $1 AND job_id = $2
   `;
@@ -175,15 +175,15 @@ export async function getApplicationWithCandidateDetail(jobId, userId) {
       p.linkedin_url AS profile_linkedin_url,
       p.portfolio_url AS profile_portfolio_url,
       p.birth_date AS profile_birth_date,
-      cv.file_name AS cv_file_name,
-      cv.mime_type AS cv_mime_type,
-      cv.file_path AS cv_file_path,
-      cv.uploaded_at AS cv_uploaded_at
+      resume.file_name AS resume_file_name,
+      resume.mime_type AS resume_mime_type,
+      resume.file_path AS resume_file_path,
+      resume.uploaded_at AS resume_uploaded_at
     FROM applications a
     LEFT JOIN ats_jobs j ON a.job_id = j.id
     LEFT JOIN users u ON a.user_id = u.id
     LEFT JOIN profiles p ON u.id = p.user_id
-    LEFT JOIN cv_files cv ON a.cv_file_id = cv.id
+    LEFT JOIN resume_files resume ON a.resume_file_id = resume.id
     WHERE a.job_id = $1 AND a.user_id = $2
     LIMIT 1
   `;
@@ -192,14 +192,14 @@ export async function getApplicationWithCandidateDetail(jobId, userId) {
   return rows[0] || null;
 }
 
-export async function getCandidatesCvFile(jobId, userId) {
+export async function getCandidatesResumeFile(jobId, userId) {
   const q = `
     SELECT
-      cv.file_name,
-      cv.mime_type,
-      cv.file_path
+      resume.file_name,
+      resume.mime_type,
+      resume.file_path
     FROM applications a
-    LEFT JOIN cv_files cv ON a.cv_file_id = cv.id
+    LEFT JOIN resume_files resume ON a.resume_file_id = resume.id
     WHERE a.job_id = $1 AND a.user_id = $2
     LIMIT 1
   `;

@@ -16,12 +16,12 @@ export const updateMyProfile = asyncHandler(async (req, res) => {
   });
 });
 
-export const uploadMyCv = asyncHandler(async (req, res) => {
+export const uploadMyResume = asyncHandler(async (req, res) => {
   const userId = req.user && req.user.id;
   const file = req.file;
 
-  const data = await profilesService.uploadMyCv(userId, file);
-  logger.info('CV uploaded successfully', {
+  const data = await profilesService.uploadMyResume(userId, file);
+  logger.info('Resume uploaded successfully', {
     userId,
     fileName: file?.originalname,
     fileSize: file?.size,
@@ -29,7 +29,7 @@ export const uploadMyCv = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     status: 'success',
-    message: 'CV uploaded successfully',
+    message: 'Resume uploaded successfully',
     data,
   });
 });
@@ -47,14 +47,14 @@ export const getMyProfile = asyncHandler(async (req, res) => {
   });
 });
 
-export const deleteMyCv = asyncHandler(async (req, res) => {
+export const deleteMyResume = asyncHandler(async (req, res) => {
   const userId = req.user && req.user.id;
 
-  const data = await profilesService.deleteMyCv(userId);
-  logger.info('CV deleted successfully', { userId });
+  const data = await profilesService.deleteMyResume(userId);
+  logger.info('Resume deleted successfully', { userId });
 
   res.status(200).json({
     status: 'success',
-    message: 'CV deleted successfully',
+    message: 'Resume deleted successfully',
   });
 });

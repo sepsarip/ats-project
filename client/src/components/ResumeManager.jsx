@@ -2,7 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { getMyProfile } from '../services/profiles';
 import { uploadMyResume, deleteMyResume } from '../services/resume';
 import { formatFileSize } from '../utils/formatters';
-import { FiFileText, FiUploadCloud, FiTrash2, FiPlus, FiAlertCircle } from 'react-icons/fi';
+import {
+  FiFileText,
+  FiUploadCloud,
+  FiTrash2,
+  FiPlus,
+  FiAlertCircle,
+} from 'react-icons/fi';
 
 export default function ResumeManager() {
   const [resume, setResume] = useState(null);
@@ -17,7 +23,7 @@ export default function ResumeManager() {
     setLoading(true);
     try {
       const data = await getMyProfile();
-      setResume(data?.cv || null);
+      setResume(data?.resume || null);
     } catch (err) {
       setError(
         err?.response?.data?.message || err?.message || 'Failed to load Resume',
@@ -55,7 +61,9 @@ export default function ResumeManager() {
       setSelectedFile(null);
     } catch (err) {
       setError(
-        err?.response?.data?.message || err?.message || 'Failed to upload Resume',
+        err?.response?.data?.message ||
+          err?.message ||
+          'Failed to upload Resume',
       );
     } finally {
       setUploading(false);
@@ -76,7 +84,9 @@ export default function ResumeManager() {
       setMessage('Resume deleted successfully');
     } catch (err) {
       setError(
-        err?.response?.data?.message || err?.message || 'Failed to delete Resume',
+        err?.response?.data?.message ||
+          err?.message ||
+          'Failed to delete Resume',
       );
     } finally {
       setDeleting(false);
@@ -128,7 +138,9 @@ export default function ResumeManager() {
             </div>
 
             <div className="border-t border-border pt-4">
-              <h4 className="text-sm font-semibold text-text-primary mb-2">Upload New Resume Directly</h4>
+              <h4 className="text-sm font-semibold text-text-primary mb-2">
+                Upload New Resume Directly
+              </h4>
               <div className="flex flex-col sm:flex-row gap-3">
                 <label className="cursor-pointer bg-white border border-border hover:bg-zinc-50 text-text-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm inline-flex items-center justify-center gap-1.5 flex-1">
                   <FiUploadCloud className="w-4 h-4 text-text-secondary" />
@@ -154,7 +166,10 @@ export default function ResumeManager() {
               {selectedFile && (
                 <div className="mt-3 text-xs text-text-primary font-medium bg-zinc-100 px-3 py-2 rounded-lg border border-border inline-flex items-center gap-2">
                   <FiFileText className="text-primary w-4 h-4" />
-                  <span>Selected: {selectedFile.name} ({formatFileSize(selectedFile.size)})</span>
+                  <span>
+                    Selected: {selectedFile.name} (
+                    {formatFileSize(selectedFile.size)})
+                  </span>
                 </div>
               )}
             </div>
@@ -164,9 +179,12 @@ export default function ResumeManager() {
             <div className="w-14 h-14 bg-zinc-100 rounded-full flex items-center justify-center text-zinc-400 mb-3 border border-zinc-200 shadow-inner">
               <FiUploadCloud className="w-7 h-7" />
             </div>
-            <h4 className="font-semibold text-text-primary mb-1 text-sm">Upload Your Resume</h4>
+            <h4 className="font-semibold text-text-primary mb-1 text-sm">
+              Upload Your Resume
+            </h4>
             <p className="text-xs text-text-secondary mb-4 max-w-xs leading-relaxed">
-              Upload your Resume in PDF format to apply for jobs easily. Maximum file size is 2MB.
+              Upload your Resume in PDF format to apply for jobs easily. Maximum
+              file size is 2MB.
             </p>
             <label className="cursor-pointer bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm inline-flex items-center gap-1.5">
               <FiPlus className="w-4 h-4" />
@@ -186,7 +204,9 @@ export default function ResumeManager() {
                     <FiFileText className="text-primary w-4 h-4 flex-shrink-0" />
                     <span className="truncate">{selectedFile.name}</span>
                   </div>
-                  <span className="text-text-secondary text-[10px] flex-shrink-0">{formatFileSize(selectedFile.size)}</span>
+                  <span className="text-text-secondary text-[10px] flex-shrink-0">
+                    {formatFileSize(selectedFile.size)}
+                  </span>
                 </div>
                 <button
                   onClick={onUpload}

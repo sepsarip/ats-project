@@ -89,8 +89,8 @@ async function postFileForExtraction(filePath) {
   }
 }
 
-// main function to extract CV text using ai-service
-export async function extractCv(filePath) {
+// main function to extract Resume text using ai-service
+export async function extractResume(filePath) {
   try {
     const resp = await postFileForExtraction(filePath);
     return resp || null;
@@ -101,13 +101,13 @@ export async function extractCv(filePath) {
 }
 
 // Post scoring payload to AI service
-export async function scoreCv(payload) {
+export async function scoreResume(payload) {
   if (!env.aiServiceUrl) {
     throw new Error('AI service URL not configured');
   }
 
   try {
-    const url = `${env.aiServiceUrl.replace(/\/$/, '')}/score-cv-job`;
+    const url = `${env.aiServiceUrl.replace(/\/$/, '')}/score-resume-job`;
     const response = await axios.post(url, payload, {
       headers: { 'Content-Type': 'application/json' },
       timeout: Number(env.aiServiceTimeoutMs) || 15000,

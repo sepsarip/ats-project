@@ -122,18 +122,18 @@ export const getJobCandidateDetail = asyncHandler(async (req, res) => {
   });
 });
 
-export const downloadCandidateCv = asyncHandler(async (req, res) => {
+export const downloadCandidateResume = asyncHandler(async (req, res) => {
   const jobId = req.params.jobId;
   const userId = req.params.userId;
 
-  const info = await applicationsService.getCandidateCvDownloadInfo(
+  const info = await applicationsService.getCandidateResumeDownloadInfo(
     jobId,
     userId,
   );
 
   const relPath = info.file_path.replace(/^\//, '');
 
-  const baseDir = path.resolve(process.cwd(), 'uploads', 'cv');
+  const baseDir = path.resolve(process.cwd(), 'uploads', 'resume');
   const absPath = path.resolve(process.cwd(), relPath);
 
   if (!absPath.startsWith(baseDir + path.sep)) {
@@ -143,7 +143,11 @@ export const downloadCandidateCv = asyncHandler(async (req, res) => {
   try {
     await fs.access(absPath);
   } catch (err) {
-    logger.warn('CV file not found on disk', { jobId, userId, file: absPath });
+    logger.warn('Resume file not found on disk', {
+      jobId,
+      userId,
+      file: absPath,
+    });
     throw new HttpError(404, 'File not found', 'FILE_NOT_FOUND');
   }
 
@@ -151,9 +155,12 @@ export const downloadCandidateCv = asyncHandler(async (req, res) => {
 
   res.download(absPath, fileName, (err) => {
     if (err) {
-      logger.error('Error downloading CV file', { error: err, file: absPath });
+      logger.error('Error downloading Resume file', {
+        error: err,
+        file: absPath,
+      });
     } else {
-      logger.info('CV file downloaded successfully', {
+      logger.info('Resume file downloaded successfully', {
         jobId,
         userId,
         file: absPath,

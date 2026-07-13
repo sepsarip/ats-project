@@ -6,14 +6,14 @@ export async function upsertByUserId(
   { file_name, file_path, mime_type, file_size, extracted_text = '' },
 ) {
   const q = `
-    INSERT INTO cv_files (user_id, file_name, file_path, mime_type, file_size, extracted_text)
+    INSERT INTO resume_files (user_id, file_name, file_path, mime_type, file_size, extracted_text)
     VALUES ($1,$2,$3,$4,$5,$6)
     ON CONFLICT (user_id) DO UPDATE SET
         file_name = EXCLUDED.file_name,
         file_path = EXCLUDED.file_path,
         mime_type = EXCLUDED.mime_type,
         file_size = EXCLUDED.file_size,
-        extracted_text = COALESCE(EXCLUDED.extracted_text, cv_files.extracted_text),
+        extracted_text = COALESCE(EXCLUDED.extracted_text, resume_files.extracted_text),
         uploaded_at = NOW()
     RETURNING *;`;
 
@@ -30,19 +30,19 @@ export async function upsertByUserId(
 }
 
 export async function updateExtractedText(userId, extracted_text) {
-  const q = `UPDATE cv_files SET extracted_text = $2 WHERE user_id = $1 RETURNING *`;
+  const q = `UPDATE resume_files SET extracted_text = $2 WHERE user_id = $1 RETURNING *`;
   const { rows } = await pool.query(q, [userId, extracted_text]);
   return rows[0] || null;
 }
 
 export async function getByUserId(client, userId) {
-  const q = `SELECT * FROM cv_files WHERE user_id = $1 LIMIT 1`;
+  const q = `SELECT * FROM resume_files WHERE user_id = $1 LIMIT 1`;
   const { rows } = await client.query(q, [userId]);
   return rows[0] || null;
 }
 
 export async function deleteByUserId(client, userId) {
-  const q = `DELETE FROM cv_files WHERE user_id = $1 RETURNING *`;
+  const q = `DELETE FROM resume_files WHERE user_id = $1 RETURNING *`;
   const { rows } = await client.query(q, [userId]);
   return rows[0] || null;
 }

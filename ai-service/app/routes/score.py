@@ -2,13 +2,14 @@ import logging
 from flask import Blueprint, request
 from app.utils.response import success, error
 from app.utils.validators import validate_score_payload
-from app.services.cv_job_scorer import score as scorer
+from app.services.resume_job_scorer import score as scorer
 
 score_bp = Blueprint('score', __name__)
 logger = logging.getLogger(__name__)
 
+@score_bp.post('/score-resume-job')
 @score_bp.post('/score-cv-job')
-def score_cv_job():
+def score_resume_job():
     try:
         payload = request.get_json(force=True)
     except Exception:
