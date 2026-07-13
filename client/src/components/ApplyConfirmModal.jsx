@@ -47,7 +47,7 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
       profileData?.user?.fullName || user?.fullName || user?.name || null;
     const phone = profileData?.profile?.phone || null;
     const portfolioUrl = profileData?.profile?.portfolio_url || null;
-    const resumeFileName = profileData?.cv?.file_name || null;
+    const resumeFileName = profileData?.resume?.file_name || null;
 
     return { fullName, phone, portfolioUrl, resumeFileName };
   }, [profileData, user]);
@@ -60,7 +60,7 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
     isJobseeker &&
     !profileLoading &&
     !!profileData &&
-    !!profileData?.cv &&
+    !!profileData?.resume &&
     !submitting &&
     !submittedApplication;
 
@@ -86,7 +86,9 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
       } catch (err) {
         if (!mounted) return;
         setProfileError(
-          err?.response?.data?.message || err?.message || 'Failed to load profile',
+          err?.response?.data?.message ||
+            err?.message ||
+            'Failed to load profile',
         );
         setProfileData(null);
       } finally {
@@ -121,7 +123,9 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
       setSubmittedApplication(application || { id: true });
     } catch (err) {
       setSubmitError(
-        err?.response?.data?.message || err?.message || 'failed to submit applications',
+        err?.response?.data?.message ||
+          err?.message ||
+          'failed to submit applications',
       );
     } finally {
       setSubmitting(false);
@@ -258,7 +262,10 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
                     <div className="mt-3 space-y-2">
                       <FieldRow label="Fullname" value={applicant.fullName} />
                       <FieldRow label="Phone" value={applicant.phone} />
-                      <FieldRow label="Resume" value={applicant.resumeFileName} />
+                      <FieldRow
+                        label="Resume"
+                        value={applicant.resumeFileName}
+                      />
                       <FieldRow
                         label="Portfolio"
                         value={applicant.portfolioUrl}
@@ -266,12 +273,14 @@ export default function ApplyConfirmModal({ open, job, jobId, onClose }) {
                     </div>
                   )}
 
-                  {!profileLoading && profileData && !profileData?.cv && (
+                  {!profileLoading && profileData && !profileData?.resume && (
                     <div className="mt-3">
                       <Notice tone="warning">
                         <div className="flex items-center justify-between gap-3">
                           <div>
-                            <div className="font-medium">Resume is not uploaded</div>
+                            <div className="font-medium">
+                              Resume is not uploaded
+                            </div>
                             <div className="text-sm text-text-secondary mt-1">
                               Please upload Resume before applying for the job.
                             </div>

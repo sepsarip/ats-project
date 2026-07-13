@@ -4,7 +4,7 @@ import logger from '../config/logger.js';
 import * as jobsModel from '../models/jobs.model.js';
 import * as profilesModel from '../models/profiles.model.js';
 import * as applicationsModel from '../models/applications.model.js';
-import * as cvFilesModel from '../models/cvFiles.model.js';
+import * as resumeFilesModel from '../models/resumeFiles.model.js';
 import * as aiService from './ai.service.js';
 
 export async function applyToJob(userId, jobId) {
@@ -33,11 +33,11 @@ export async function applyToJob(userId, jobId) {
       throw new HttpError(404, 'User not found', 'USER_NOT_FOUND');
     }
 
-    if (!profileRow.cv_id) {
+    if (!profileRow.resume_id) {
       throw new HttpError(
         400,
-        'Please upload your CV before applying',
-        'CV_NOT_FOUND',
+        'Please upload your resume before applying',
+        'RESUME_NOT_FOUND',
       );
     }
 
@@ -57,7 +57,7 @@ export async function applyToJob(userId, jobId) {
     const application = await applicationsModel.insertApplication(client, {
       job_id: jobId,
       user_id: userId,
-      cv_file_id: profileRow.cv_id,
+      resume_file_id: profileRow.resume_id,
     });
 
     await client.query('COMMIT');
@@ -67,7 +67,7 @@ export async function applyToJob(userId, jobId) {
       job: { id: job.id, title: job.title },
       status: application.status,
       applied_at: application.applied_at,
-      cv: {
+      resume: {
         file_name: profileRow.file_name,
         file_size: profileRow.file_size,
         file_path: profileRow.file_path,
@@ -90,12 +90,15 @@ export async function applyToJob(userId, jobId) {
       try {
         const bgClient = await pool.connect();
         try {
-          const cvRow = await cvFilesModel.getByUserId(bgClient, userId);
+          const cvRow = await resumeFilesModel.getByUserId(bgClient, userId);
           if (!cvRow || !cvRow.extracted_text) {
-            logger.info('No extracted CV text available, skipping scoring', {
-              userId,
-              applicationId: application.id,
-            });
+            logger.info(
+              'No extracted resume text available, skipping scoring',
+              {
+                userId,
+                applicationId: application.id,
+              },
+            );
             return;
           }
 
@@ -126,7 +129,7 @@ export async function applyToJob(userId, jobId) {
 
           const payload = {
             application_id: application.id,
-            extracted_text_cv: cvRow.extracted_text,
+            extracted_text_resume: cvRow.extracted_text,
             job_info: {
               title: jobRow.title,
               requirements: requirements || [],
@@ -134,7 +137,7 @@ export async function applyToJob(userId, jobId) {
             },
           };
 
-          const resp = await aiService.scoreCv(payload);
+          const resp = await aiService.scoreResume(payload);
           if (resp && typeof resp.score === 'number') {
             try {
               await applicationsModel.updateApplicationScoreById(
@@ -356,10 +359,10 @@ export async function getCandidateDetail(jobId, userId) {
         portfolio_url: row.profile_portfolio_url,
         birth_date: row.profile_birth_date,
       },
-      cv: {
-        file_name: row.cv_file_name,
-        file_path: row.cv_file_path,
-        mime_type: row.cv_mime_type,
+      resume: {
+        file_name: row.resume_file_name,
+        file_path: row.resume_file_path,
+        mime_type: row.resume_mime_type,
       },
     };
 
@@ -380,22 +383,22 @@ export async function getCandidateDetail(jobId, userId) {
   }
 }
 
-export async function getCandidateCvDownloadInfo(jobId, userId) {
+export async function getCandidateResumeDownloadInfo(jobId, userId) {
   try {
     const job = await jobsModel.getJobById(jobId);
     if (!job) throw new HttpError(404, 'Job not found', 'JOB_NOT_FOUND');
 
-    const row = await applicationsModel.getCandidatesCvFile(jobId, userId);
+    const row = await applicationsModel.getCandidatesResumeFile(jobId, userId);
 
     if (!row) {
       throw new HttpError(
         404,
-        'Application or CV not found for given job and user',
-        'CV_NOT_FOUND',
+        'Application or resume not found for given job and user',
+        'RESUME_NOT_FOUND',
       );
     }
     if (!row.file_path) {
-      throw new HttpError(404, 'CV not found', 'CV_NOT_FOUND');
+      throw new HttpError(404, 'Resume not found', 'RESUME_NOT_FOUND');
     }
 
     return {
@@ -405,15 +408,15 @@ export async function getCandidateCvDownloadInfo(jobId, userId) {
     };
   } catch (err) {
     if (err instanceof HttpError) throw err;
-    logger.error('Error retrieving CV download info', {
+    logger.error('Error retrieving resume download info', {
       error: err,
       jobId,
       userId,
     });
     throw new HttpError(
       500,
-      'Failed to retrieve CV info',
-      'CV_RETRIEVE_FAILED',
+      'Failed to retrieve resume info',
+      'RESUME_RETRIEVE_FAILED',
     );
   }
 }

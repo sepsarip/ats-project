@@ -6,7 +6,7 @@ import { HttpError } from '../utils/HttpError.js';
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dest = path.join(process.cwd(), 'uploads', 'cv');
+    const dest = path.join(process.cwd(), 'uploads', 'resume');
     try {
       fs.mkdirSync(dest, { recursive: true });
     } catch (e) {
@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const userId = req.user && req.user.id;
-    const name = `user_${userId}_cv.pdf`;
+    const name = `user_${userId}_resume.pdf`;
     cb(null, name);
   },
 });

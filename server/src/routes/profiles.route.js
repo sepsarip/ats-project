@@ -5,9 +5,9 @@ import { validate } from '../middleware/validate.middleware.js';
 import updateProfileValidation from '../validators/profiles.validator.js';
 import {
   updateMyProfile,
-  uploadMyCv,
+  uploadMyResume,
   getMyProfile,
-  deleteMyCv,
+  deleteMyResume,
 } from '../controllers/profiles.controller.js';
 import upload from '../middleware/upload.middleware.js';
 
@@ -25,13 +25,18 @@ router.put(
 router.get('/me', authMiddleware, requireRole('jobseeker'), getMyProfile);
 
 router.post(
-  '/cv',
+  '/resume',
   authMiddleware,
   requireRole('jobseeker'),
-  upload.single('cv'),
-  uploadMyCv,
+  upload.single('resume'),
+  uploadMyResume,
 );
 
-router.delete('/cv', authMiddleware, requireRole('jobseeker'), deleteMyCv);
+router.delete(
+  '/resume',
+  authMiddleware,
+  requireRole('jobseeker'),
+  deleteMyResume,
+);
 
 export default router;

@@ -3,8 +3,8 @@ def validate_score_payload(payload):
         return False, "payload must be a JSON object"
     if "application_id" not in payload:
         return False, "application_id is required"
-    if "extracted_text_cv" not in payload:
-        return False, "extracted_text_cv is required"
+    if "extracted_text_resume" not in payload and "extracted_text_cv" not in payload:
+        return False, "extracted_text_resume is required"
     if "job_info" not in payload or not isinstance(payload.get("job_info"), dict):
         return False, "job_info is required and must be an object"
     job_info = payload["job_info"]

@@ -78,7 +78,7 @@ export default function CandidateDetailPage() {
   if (error) return <p className="text-error">{error}</p>;
   if (!data) return <p>Candidate not found.</p>;
 
-  const { job, application, user, profile, cv: resume } = data;
+  const { job, application, user, profile, resume } = data;
 
   return (
     <div className="p-4 bg-surface rounded border border-border">
@@ -133,7 +133,11 @@ export default function CandidateDetailPage() {
                 className="bg-transparent text-sm text-text-primary focus:outline-none cursor-pointer px-1 py-0.5"
               >
                 {APPLICATION_STATUSES.map((s) => (
-                  <option key={s.value} value={s.value} className="bg-surface text-text-primary">
+                  <option
+                    key={s.value}
+                    value={s.value}
+                    className="bg-surface text-text-primary"
+                  >
                     {s.label}
                   </option>
                 ))}
@@ -235,7 +239,7 @@ export default function CandidateDetailPage() {
             <button
               onClick={handleDownloadResume}
               disabled={downloading}
-              title={downloading ? "Downloading Resume..." : "Download Resume"}
+              title={downloading ? 'Downloading Resume...' : 'Download Resume'}
               className="inline-flex items-center gap-2 px-3 py-2 border border-border rounded hover:bg-sidebar text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50"
             >
               {downloading ? (
