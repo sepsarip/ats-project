@@ -3,11 +3,15 @@ import {
   register,
   login,
   changePassword,
+  forgetPassword,
+  resetPassword,
 } from '../controllers/auth.controller.js';
 import {
   registerValidation,
   loginValidation,
   changePasswordValidation,
+  forgetPasswordValidation,
+  resetPasswordValidation,
 } from '../validators/auth.validator.js';
 import { validate } from '../middleware/validate.middleware.js';
 import { authMiddleware } from '../middleware/auth.middleware.js';
@@ -23,5 +27,14 @@ router.post(
   validate,
   changePassword,
 );
+router.post('/forget-password', forgetPasswordValidation, validate, forgetPassword);
+router.post(
+  '/reset-password/:token',
+  resetPasswordValidation,
+  validate,
+  resetPassword,
+);
+
 
 export default router;
+

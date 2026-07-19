@@ -67,6 +67,15 @@ export default function LoginPage() {
             showToggle
           />
 
+          <div className="flex justify-end">
+            <Link
+              to="/forget-password"
+              className="text-xs text-primary hover:text-primary-hover"
+            >
+              Forgot password?
+            </Link>
+          </div>
+
           <div>
             <button
               type="submit"

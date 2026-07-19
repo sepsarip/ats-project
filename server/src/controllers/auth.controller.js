@@ -47,3 +47,29 @@ export const changePassword = asyncHandler(async (req, res) => {
     data,
   });
 });
+
+export const forgetPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  logger.info('Forget password request received', { email });
+  const data = await authService.requestForgotPassword(email);
+
+  res.status(200).json({
+    status: 'success',
+    message: data.message
+  });
+});
+
+export const resetPassword = asyncHandler(async (req, res) => {
+  const { token } = req.params;
+  const { newPassword } = req.body;
+  logger.info('Reset password request received');
+  const data = await authService.resetPassword({ token, newPassword });
+
+  res.status(200).json({
+    status: 'success',
+    message: data.message,
+    data,
+  });
+});
+
+
