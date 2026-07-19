@@ -44,4 +44,7 @@ export const env = {
     email: process.env.ADMIN_EMAIL,
     password: process.env.ADMIN_PASSWORD,
   },
+  googleEmailUser: process.env.GOOGLE_EMAIL_USER,
+  googleAppPassword: process.env.GOOGLE_APP_PASSWORD,
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
 };

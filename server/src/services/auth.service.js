@@ -9,6 +9,7 @@ import {
   updatePasswordById,
 } from '../models/users.model.js';
 import logger from '../config/logger.js';
+import { sendResetPasswordEmail } from '../utils/mailer.js';
 
 export async function registerJobseeker({ fullName, email, password }) {
   const existing = await findByEmail(email);
@@ -118,3 +119,95 @@ export async function changePassword({ userId, oldPassword, newPassword }) {
     updatedAt: updated.updated_at,
   };
 }
+
+export async function requestForgotPassword(email) {
+  const user = await findByEmail(email);
+  if (!user) {
+    return {
+      message:
+        'If email is registered, password reset instructions have been sent to that email.',
+    };
+  }
+
+  const resetSecret = env.jwt.secret + user.password;
+  const token = jwt.sign(
+    { id: user.id, email: user.email, purpose: 'reset_password' },
+    resetSecret,
+    { expiresIn: '15m' },
+  );
+
+  const resetUrl = `${env.frontendUrl}/reset-password?token=${token}&email=${encodeURIComponent(user.email)}`;
+
+  try {
+    await sendResetPasswordEmail({ to: user.email, resetUrl });
+    return {
+      message: `If email is registered, password reset instructions have been sent, please check your inbox and spam folder.`
+    };
+
+  } catch (err) {
+    logger.error('Failed to send reset password email', {
+      error: err.message,
+      email: user.email,
+    });
+    throw new HttpError(
+      500,
+      'Failed to send reset password email',
+      'EMAIL_SEND_FAILED',
+    );
+  }
+}
+
+export async function resetPassword({ token, newPassword }) {
+  let decoded;
+  try {
+    decoded = jwt.decode(token);
+  } catch {
+    throw new HttpError(
+      400,
+      'The password reset token is invalid or has expired',
+      'INVALID_RESET_TOKEN',
+    );
+  }
+
+  if (!decoded || decoded.purpose !== 'reset_password' || !decoded.id) {
+    throw new HttpError(
+      400,
+      'The password reset token is invalid or has expired',
+      'INVALID_RESET_TOKEN',
+    );
+  }
+
+  const user = await findById(decoded.id);
+  if (!user) {
+    throw new HttpError(
+      400,
+      'The password reset token is invalid or has expired',
+      'INVALID_RESET_TOKEN',
+    );
+  }
+
+  const resetSecret = env.jwt.secret + user.password;
+  try {
+    jwt.verify(token, resetSecret);
+    logger.info('Reset password token verified successfully');
+  } catch {
+    throw new HttpError(
+      400,
+      'The password reset token is invalid or has expired',
+      'INVALID_RESET_TOKEN',
+    );
+  }
+
+  const hashed = await bcrypt.hash(newPassword, 10);
+  const updated = await updatePasswordById(user.id, hashed);
+  if (!updated) {
+    throw new HttpError(404, 'User not found', 'USER_NOT_FOUND');
+  }
+
+  return {
+    id: updated.id,
+    email: updated.email,
+    message: 'Password has been successfully updated.',
+  };
+}
+

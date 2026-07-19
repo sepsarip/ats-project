@@ -37,7 +37,33 @@ export async function changePassword(
     newPassword,
     confirmPassword,
   });
+}
+
+// Request password reset link
+export async function requestForgotPassword(email) {
+  const res = await api.post('/api/auth/forget-password', { email });
   return res.data;
 }
 
-export default { login, extractAuthFromResponse, register, changePassword };
+// Reset password with token
+export async function resetPassword(token, newPassword, confirmPassword) {
+  const res = await api.post(
+    `/api/auth/reset-password/${encodeURIComponent(token)}`,
+    {
+      newPassword,
+      confirmPassword,
+    },
+  );
+  return res.data;
+}
+
+
+export default {
+  login,
+  extractAuthFromResponse,
+  register,
+  changePassword,
+  requestForgotPassword,
+  resetPassword,
+};
+
